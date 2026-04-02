@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+ob_start();
 
 session_start();
 
@@ -26,6 +27,15 @@ if (!is_file($pageFile)) {
     $pageFile = __DIR__ . '/pages/404.php';
 }
 
+// Pages that ONLY perform actions then redirect (no HTML output).
+// Must be included BEFORE header.php so header() calls are never blocked.
+// Note: edit-bike.php renders an HTML form, so it stays in the normal flow.
+$actionPages = ['delete-bike'];
+if (in_array($page, $actionPages, true)) {
+    require $pageFile;
+    exit;
+}
+
 require_once __DIR__ . '/includes/header.php';
 
 if (is_file($pageFile)) {
@@ -36,4 +46,3 @@ if (is_file($pageFile)) {
 }
 
 require_once __DIR__ . '/includes/footer.php';
-
