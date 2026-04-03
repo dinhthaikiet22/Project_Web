@@ -128,34 +128,40 @@ try {
 
           <!-- PHƯƠNG THỨC THANH TOÁN -->
           <div class="card border-0 shadow-sm rounded-4 mb-4">
-            <div class="card-body p-4">
-              <h5 class="fw-bold mb-4"><i class="fa-solid fa-credit-card text-success me-2"></i> Phương thức Thanh toán</h5>
+            <div class="card-body p-4 p-md-5">
+              <h5 class="fw-bold mb-4 fs-5"><i class="fa-solid fa-credit-card me-2" style="color: #FF5722;"></i> Phương thức thanh toán</h5>
               
               <div class="d-flex flex-column gap-3">
-                <!-- VIETQR -->
-                <label class="border p-3 rounded-3 c-radio-label" style="cursor: pointer;">
-                  <div class="d-flex align-items-center gap-3">
-                    <input class="form-check-input mt-0" type="radio" name="payment_method" value="vietqr" onchange="togglePaymentUI()" checked>
-                    <div class="d-flex align-items-center gap-2">
-                      <img src="https://img.vietqr.io/image/mb-1-compact.jpg" alt="VietQR" style="height: 30px; object-fit: contain;">
-                      <div class="fw-bold text-dark">Chuyển khoản VietQR (Tự động xác nhận)</div>
+                <!-- VNPAY -->
+                <label class="border rounded-4 p-3 p-md-4 c-radio-label position-relative" style="cursor: pointer; transition: all 0.3s ease;">
+                  <div class="d-flex align-items-center gap-3 gap-md-4">
+                    <input class="form-check-input mt-0 position-absolute opacity-0" type="radio" name="payment_method" value="vnpay" checked>
+                    <div class="d-flex align-items-center justify-content-center rounded-3 bg-light" style="width: 58px; height: 58px; flex-shrink: 0;">
+                       <img src="https://vnpay.vn/s1/statics.vnpay.vn/2023/6/0oxhzjmxbksr1686814746087.png" alt="VNPAY" style="height: 24px; object-fit: contain;">
                     </div>
-                  </div>
-                  
-                  <div id="vietqrBox" class="mt-4 pt-3 border-top text-center" style="display: block;">
-                    <div class="mb-2 text-dark font-monospace fw-medium">Quét mã QR dưới đây bằng App Ngân Hàng/MoMo:</div>
-                    <img id="qrImage" src="" alt="VietQR" style="width: 200px; height: 200px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 2px solid #FF5722;" class="mb-3">
-                    <div class="text-danger small fw-bold">Vui lòng quét đúng mã QR để hệ thống tự động ghi nhận thanh toán!</div>
+                    <div class="flex-grow-1">
+                       <div class="fw-bold text-dark" style="font-size: 1.1rem;">Thanh toán trực tuyến VNPAY</div>
+                       <div class="text-muted small mt-1">Hỗ trợ thẻ ATM nội địa, Visa/Mastercard và quét mã QR App Ngân hàng</div>
+                    </div>
+                    <div class="ms-auto checkmark-container ps-2">
+                       <i class="fa-solid fa-circle-check fs-4 text-orange opacity-0" style="transition: all 0.3s ease; transform: scale(0.8);"></i>
+                    </div>
                   </div>
                 </label>
 
                 <!-- COD -->
-                <label class="border p-3 rounded-3 c-radio-label" style="cursor: pointer;">
-                  <div class="d-flex align-items-center gap-3">
-                    <input class="form-check-input mt-0" type="radio" name="payment_method" value="cod" onchange="togglePaymentUI()">
-                    <div>
-                      <div class="fw-bold text-dark">Thanh toán khi nhận hàng (COD)</div>
-                      <div class="text-muted small">Thanh toán tiền mặt cho Shipper khi xe được giao tới</div>
+                <label class="border rounded-4 p-3 p-md-4 c-radio-label position-relative" style="cursor: pointer; transition: all 0.3s ease;">
+                  <div class="d-flex align-items-center gap-3 gap-md-4">
+                    <input class="form-check-input mt-0 position-absolute opacity-0" type="radio" name="payment_method" value="cod">
+                    <div class="d-flex align-items-center justify-content-center rounded-3 bg-light" style="width: 58px; height: 58px; flex-shrink: 0;">
+                      <i class="fa-solid fa-hand-holding-dollar fs-3 text-success"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                      <div class="fw-bold text-dark" style="font-size: 1.1rem;">Thanh toán khi nhận hàng (COD)</div>
+                      <div class="text-muted small mt-1">Nhận xe, kiểm tra trực tiếp và thanh toán tiền mặt cho đơn vị vận chuyển</div>
+                    </div>
+                    <div class="ms-auto checkmark-container ps-2">
+                       <i class="fa-solid fa-circle-check fs-4 text-orange opacity-0" style="transition: all 0.3s ease; transform: scale(0.8);"></i>
                     </div>
                   </div>
                 </label>
@@ -205,14 +211,51 @@ try {
         </div>
       </div>
 
+
     </div>
   </div>
 </section>
 
+<!-- OVERLAY LOADING CHO VNPAY -->
+<div id="vnpayOverlay" class="d-none align-items-center justify-content-center" style="position: fixed; inset: 0; background: rgba(33, 33, 33, 0.90); z-index: 9999; backdrop-filter: blur(8px);">
+    <div class="text-center text-white" style="transform: translateY(-10%);">
+        <div class="spinner-border mb-4" style="width: 4.5rem; height: 4.5rem; color: #FF5722;" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <h4 class="fw-bolder mb-2" style="letter-spacing: 0.5px;">Đang khởi tạo giao dịch...</h4>
+        <p class="text-white-50 small mb-0">Vui lòng không đóng trình duyệt, hệ thống đang chuyển hướng tới <span class="fw-bold text-white">VNPAY</span> an toàn.</p>
+    </div>
+</div>
+
 <style>
+.text-orange { color: #FF5722 !important; }
+.bg-light { background-color: #f8f9fa !important; }
+
+/* Luxury Radio Labels */
+.c-radio-label {
+  border-width: 2px !important;
+  border-color: #e9ecef !important;
+}
+.c-radio-label:hover {
+  border-color: #adb5bd !important;
+  background-color: #fafafa;
+}
+
+/* Checked State */
 .c-radio-label:has(input:checked) {
   border-color: #FF5722 !important;
-  background-color: rgba(255,87,34,0.03);
+  background-color: rgba(255, 87, 34, 0.04) !important;
+  box-shadow: 0 4px 15px rgba(255,87,34,0.08);
+}
+
+.c-radio-label:has(input:checked) i.text-orange {
+  opacity: 1 !important;
+  transform: scale(1) !important;
+}
+
+.c-radio-label:has(input:checked) .bg-light {
+  background-color: #fff !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 </style>
 
@@ -229,35 +272,9 @@ function calcTotal() {
 
     const total = basePrice + fee;
 
-    // Display
+    // Display updates instantly without reload
     document.getElementById('lblFee').innerText = (fee > 0 ? fee.toLocaleString('vi-VN') : '0') + ' đ';
     document.getElementById('lblTotal').innerText = total.toLocaleString('vi-VN') + ' đ';
-
-    // Update QR Code
-    updateQRCode(total);
-}
-
-function updateQRCode(totalAmount) {
-    // VietQR Syntax: NGANHANG-STK
-    // Dữ liệu giả lập Ngân Hàng MB (BIN 970422) và STK 0123456789 để Test.
-    const bankId = 'MB'; // MBBank
-    const accNo = '0123456789'; // Thay bằng STK của hệ thống bạn
-    const accountName = encodeURIComponent('CYCLE TRUST');
-    const orderInfo = encodeURIComponent('CycleTrust Order ' + <?= $bikeId ?>);
-    
-    const qrUrl = `https://img.vietqr.io/image/${bankId}-${accNo}-compact.jpg?amount=${totalAmount}&addInfo=${orderInfo}&accountName=${accountName}`;
-    document.getElementById('qrImage').src = qrUrl;
-}
-
-function togglePaymentUI() {
-    const payMethod = document.querySelector('input[name="payment_method"]:checked').value;
-    const qrBox = document.getElementById('vietqrBox');
-    
-    if (payMethod === 'vietqr') {
-        qrBox.style.display = 'block';
-    } else {
-        qrBox.style.display = 'none';
-    }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -284,15 +301,22 @@ document.addEventListener('DOMContentLoaded', function() {
             const result = await response.json();
 
             if (result.status === 'success') {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Đặt hàng thành công!',
-                    text: 'Mã Đơn: ' + result.order_code,
-                    confirmButtonText: 'Xem Đơn Hàng',
-                    confirmButtonColor: '#FF5722'
-                }).then(() => {
-                    window.location.href = '<?= BASE_URL ?>?page=user/orders';
-                });
+                if (result.payment_url) {
+                    const overlay = document.getElementById('vnpayOverlay');
+                    overlay.classList.remove('d-none');
+                    overlay.classList.add('d-flex');
+                    setTimeout(() => {
+                        window.location.href = result.payment_url;
+                    }, 1200); 
+                    return;
+                }
+
+                if (result.redirect_url) {
+                    window.location.href = result.redirect_url;
+                    return;
+                }
+
+                window.location.href = '<?= BASE_URL ?>?page=order_success&code=' + result.order_code;
             } else {
                 Swal.fire({
                     icon: 'error',

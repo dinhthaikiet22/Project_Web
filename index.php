@@ -32,7 +32,7 @@ if (!is_file($pageFile)) {
 // Must be included BEFORE header.php so header() calls are never blocked.
 // Note: edit-bike.php renders an HTML form, so it stays in the normal flow.
 // Pages that are purely action-handlers (redirect after processing, no HTML output).
-$actionPages = ['delete-bike'];
+$actionPages = ['delete-bike', 'vnpay_ipn'];
 if (in_array($page, $actionPages, true)) {
     require $pageFile;
     exit;

@@ -10,8 +10,9 @@ transaction_code varchar(50)
 sender_id int(11)
 receiver_id int(11)
 amount decimal(15,2)
-balance_before decimal(15,2)
-balance_after decimal(15,2)
+vnp_transaction_no varchar(50)
+vnp_bank_code varchar(20)
+vnp_pay_date datetime
 type enum('payment','refund','topup','withdraw')
 status enum('pending','success','failed')
 content text
