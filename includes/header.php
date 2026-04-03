@@ -77,6 +77,12 @@
               </a>
               <ul class="dropdown-menu dropdown-menu-end ct-dropdown ct-dropdown--white">
                 <li>
+                  <a class="dropdown-item" href="<?= BASE_URL ?>?page=user/profile">
+                    <i class="fa-solid fa-circle-user me-2"></i>
+                    Hồ sơ cá nhân
+                  </a>
+                </li>
+                <li>
                   <a class="dropdown-item" href="<?= BASE_URL ?>?page=my-postings">
                     <i class="fa-solid fa-rectangle-list me-2"></i>
                     Tin của tôi

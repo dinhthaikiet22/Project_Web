@@ -17,8 +17,9 @@ if ($page === '') {
     $page = 'home';
 }
 
-// Allow only safe page slugs, prevent directory traversal and weird chars.
-if (!preg_match('/\A[a-zA-Z0-9_-]+\z/', $page)) {
+// Allow only safe page slugs, including one level of sub-directory (e.g. "user/profile").
+// Prevents directory traversal by whitelisting safe characters and a single slash.
+if (!preg_match('/\A[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)?\z/', $page)) {
     $page = '404';
 }
 
@@ -30,6 +31,7 @@ if (!is_file($pageFile)) {
 // Pages that ONLY perform actions then redirect (no HTML output).
 // Must be included BEFORE header.php so header() calls are never blocked.
 // Note: edit-bike.php renders an HTML form, so it stays in the normal flow.
+// Pages that are purely action-handlers (redirect after processing, no HTML output).
 $actionPages = ['delete-bike'];
 if (in_array($page, $actionPages, true)) {
     require $pageFile;
