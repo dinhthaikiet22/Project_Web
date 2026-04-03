@@ -1,0 +1,49 @@
+
+--- wallets ---
+user_id int(11)
+balance decimal(15,2)
+updated_at timestamp
+
+--- transactions ---
+id int(11)
+transaction_code varchar(50)
+sender_id int(11)
+receiver_id int(11)
+amount decimal(15,2)
+balance_before decimal(15,2)
+balance_after decimal(15,2)
+type enum('payment','refund','topup','withdraw')
+status enum('pending','success','failed')
+content text
+created_at timestamp
+
+--- orders ---
+id int(11)
+order_code varchar(50)
+bike_id int(11)
+transaction_id int(11)
+buyer_id int(11)
+seller_id int(11)
+total_price decimal(15,2)
+order_status enum('waiting_payment','paid','completed','cancelled')
+created_at timestamp
+
+--- bikes ---
+id int(11)
+user_id int(11)
+category_id int(11)
+title varchar(255)
+price decimal(15,2)
+brand varchar(100)
+frame_material varchar(100)
+groupset varchar(100)
+wheel_size varchar(50)
+weight varchar(20)
+size varchar(10)
+condition_status varchar(50)
+description text
+image_url varchar(255)
+location varchar(100)
+status enum('available','sold','hidden')
+created_at timestamp
+bike_size varchar(30)

@@ -443,6 +443,45 @@ if ($categoryId > 0) {
                 Chưa có số liên hệ
               </button>
             <?php endif; ?>
+
+            <?php
+              $sellerId = (int)($bike['user_id'] ?? 0);
+              $currentUserId = (int)($_SESSION['user_id'] ?? 0);
+              if ($sellerId > 0 && $sellerId !== $currentUserId && $currentUserId > 0):
+            ?>
+              <a
+                href="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>?page=checkout&bike_id=<?= $id ?>"
+                class="btn w-100 py-3 rounded-3 mt-3 shadow-sm"
+                style="background: #FF5722; color: #fff; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 10px; transition: background .2s, transform .2s;"
+                onmouseover="this.style.background='#e64a19';this.style.transform='translateY(-2px)';"
+                onmouseout="this.style.background='#FF5722';this.style.transform='none';"
+              >
+                <i class="fa-solid fa-shield-halved"></i>
+                MUA NGAY (THANH TOÁN AN TOÀN)
+              </a>
+
+              <a
+                href="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>?page=chat_room&receiver_id=<?= $sellerId ?><?= $id > 0 ? '&bike_id='.$id : '' ?>"
+                class="btn w-100 py-3 rounded-3 mt-3"
+                style="border: 2px solid #212121; color: #212121; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 10px; transition: background .2s, color .2s;"
+                onmouseover="this.style.background='#212121';this.style.color='#fff';"
+                onmouseout="this.style.background='transparent';this.style.color='#212121';"
+              >
+                <i class="fa-regular fa-comment-dots"></i>
+                CHAT VỚI NGƯỜI BÁN
+              </a>
+            <?php elseif ($currentUserId === 0): ?>
+               <a
+                href="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>?page=login"
+                class="btn w-100 py-3 rounded-3 mt-3"
+                style="border: 2px solid #ff5722; color: #ff5722; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 10px; transition: background .2s, color .2s;"
+                onmouseover="this.style.background='#ff5722';this.style.color='#fff';"
+                onmouseout="this.style.background='transparent';this.style.color='#ff5722';"
+              >
+                <i class="fa-regular fa-comment-dots"></i>
+                ĐĂNG NHẬP ĐỂ CHAT
+              </a>
+            <?php endif; ?>
           </div>
 
           <button type="button" class="btn w-100 py-3 rounded-3" style="border:1.5px solid rgba(33,33,33,.2);font-weight:600;transition:border-color .2s,color .2s;" onmouseover="this.style.borderColor='#ff5722';this.style.color='#ff5722';" onmouseout="this.style.borderColor='rgba(33,33,33,.2)';this.style.color='';">

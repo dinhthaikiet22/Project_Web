@@ -23,11 +23,12 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <?php
+// Khởi chạy thông báo hệ thống (Toast System)
 if (!empty($_SESSION['success'])) {
-    $title = (string)$_SESSION['success'];
-    unset($_SESSION['success']);
-    ?>
-    <script>
+    $msg = (string)$_SESSION['success'];
+    unset($_SESSION['success']); // Hủy ngay session để không lặp lại khi F5
+    $jsonMsg = json_encode($msg, JSON_UNESCAPED_UNICODE);
+    echo "<script>
       Swal.fire({
         toast: true,
         position: 'top-end',
@@ -35,17 +36,16 @@ if (!empty($_SESSION['success'])) {
         timer: 3000,
         timerProgressBar: true,
         icon: 'success',
-        title: <?= json_encode($title, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>
+        title: {$jsonMsg}
       });
-    </script>
-    <?php
+    </script>";
 }
 
 if (!empty($_SESSION['error'])) {
-    $title = (string)$_SESSION['error'];
-    unset($_SESSION['error']);
-    ?>
-    <script>
+    $msg = (string)$_SESSION['error'];
+    unset($_SESSION['error']); // Hủy ngay session để không lặp lại khi F5
+    $jsonMsg = json_encode($msg, JSON_UNESCAPED_UNICODE);
+    echo "<script>
       Swal.fire({
         toast: true,
         position: 'top-end',
@@ -53,12 +53,75 @@ if (!empty($_SESSION['error'])) {
         timer: 3000,
         timerProgressBar: true,
         icon: 'error',
-        title: <?= json_encode($title, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>
+        title: {$jsonMsg}
       });
-    </script>
-    <?php
+    </script>";
 }
 ?>
+
+<?php if (isset($_SESSION['user_id'])): ?>
+<!-- REAL-TIME JS: Đếm tin nhắn chưa đọc & Hiện animation -->
+<script>
+  (function() {
+    const unreadBadge = document.getElementById('unreadMsgBadge');
+    const chatIcon = document.getElementById('navChatIcon');
+    
+    async function fetchUnreadCount() {
+        try {
+            const res = await fetch('<?= BASE_URL ?>modules/chat/count_unread.php');
+            const data = await res.json();
+            if (data.status === 'success') {
+                const count = parseInt(data.unread_count);
+                if (count > 0) {
+                    const currentString = unreadBadge.innerText;
+                    const isNewMessage = (unreadBadge.style.display === 'none' || parseInt(currentString) !== count);
+                    
+                    if (isNewMessage) {
+                        // Kích hoạt hiệu ứng tịnh tiến "shake" nhẹ báo hiệu có tin mới tới
+                        if (chatIcon) {
+                            chatIcon.classList.add('chat-shake');
+                            setTimeout(() => {
+                                chatIcon.classList.remove('chat-shake');
+                            }, 600);
+                        }
+                    }
+                    
+                    unreadBadge.style.display = 'inline-block';
+                    unreadBadge.innerText = count > 99 ? '99+' : count;
+                } else {
+                    unreadBadge.style.display = 'none';
+                    unreadBadge.innerText = '0';
+                }
+            }
+        } catch (e) {
+             console.error('Lỗi khi tải log tin nhắn unread:', e);
+        }
+    }
+    
+    // Inject Dynamic Style class cho hiệu ứng rung chuông (Bell Shake Style)
+    const style = document.createElement('style');
+    style.innerHTML = `
+      @keyframes shakeAndColor {
+        0% { transform: rotate(0deg); }
+        25% { transform: rotate(-25deg); color: #ff5722; }
+        50% { transform: rotate(25deg); color: #ff5722; }
+        75% { transform: rotate(-25deg); color: #ff5722;}
+        100% { transform: rotate(0deg); }
+      }
+      .chat-shake i {
+        animation: shakeAndColor 0.6s ease-in-out;
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Kích hoạt Fetch ở lần load trang đầu tiên
+    fetchUnreadCount();
+    // Vòng lặp đếm tin nhắn ngầm (Background Sync) mỗi 5 giây
+    setInterval(fetchUnreadCount, 5000);
+  })();
+</script>
+<?php endif; ?>
+
 </body>
 </html>
 
