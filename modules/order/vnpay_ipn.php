@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-require_once __DIR__ . '/../config/config_vnpay.php';
+require_once __DIR__ . '/../../config/config_vnpay.php';
 
 $inputData = array();
 $returnData = array();
@@ -48,7 +48,7 @@ if ($secureHash === $vnp_SecureHash) {
     $orderCode = $orderCodeParts[0];
 
     try {
-        $conn = require __DIR__ . '/../config/db.php';
+        $conn = require __DIR__ . '/../../config/db.php';
         
         $stmt = $conn->prepare("SELECT id, order_status, total_price, buyer_id FROM orders WHERE order_code = ? LIMIT 1");
         $stmt->execute([$orderCode]);

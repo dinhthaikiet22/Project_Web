@@ -161,8 +161,6 @@ try {
             $vnp_Url .= '&vnp_SecureHash=' . $vnpSecureHash;
         }
         
-        die("DEBUG URL VNPAY: " . $vnp_Url);
-        
         echo json_encode([
             'status' => 'success',
             'message' => 'Đang chuyển hướng VNPAY...',

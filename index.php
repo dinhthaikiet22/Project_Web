@@ -23,22 +23,34 @@ if (!preg_match('/\A[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)?\z/', $page)) {
     $page = '404';
 }
 
-$pageFile = __DIR__ . '/pages/' . $page . '.php';
+$isAdminRoute = str_starts_with($page, 'admin_');
+
+if ($isAdminRoute) {
+    $pageFile = __DIR__ . '/pages/admin/' . $page . '.php';
+} else {
+    $pageFile = __DIR__ . '/pages/' . $page . '.php';
+}
+
 if (!is_file($pageFile)) {
     $pageFile = __DIR__ . '/pages/404.php';
+    $isAdminRoute = false;
 }
 
 // Pages that ONLY perform actions then redirect (no HTML output).
 // Must be included BEFORE header.php so header() calls are never blocked.
 // Note: edit-bike.php renders an HTML form, so it stays in the normal flow.
 // Pages that are purely action-handlers (redirect after processing, no HTML output).
-$actionPages = ['delete-bike', 'vnpay_ipn'];
+$actionPages = ['delete-bike'];
 if (in_array($page, $actionPages, true)) {
     require $pageFile;
     exit;
 }
 
-require_once __DIR__ . '/includes/header.php';
+if ($isAdminRoute) {
+    require_once __DIR__ . '/includes/admin/admin_header.php';
+} else {
+    require_once __DIR__ . '/includes/header.php';
+}
 
 if (is_file($pageFile)) {
     require $pageFile;
@@ -47,4 +59,8 @@ if (is_file($pageFile)) {
     echo '<h1>404</h1><p>Page not found.</p>';
 }
 
-require_once __DIR__ . '/includes/footer.php';
+if ($isAdminRoute) {
+    require_once __DIR__ . '/includes/admin/admin_footer.php';
+} else {
+    require_once __DIR__ . '/includes/footer.php';
+}

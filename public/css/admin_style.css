@@ -1,0 +1,220 @@
+/* CycleTrust Admin Panel Styles - Dark & Orange Theme */
+:root {
+    --admin-bg-dark: #1a1c23;
+    --admin-bg-light: #f4f6f9;
+    --admin-primary: #FF5722;
+    --admin-text-light: #ffffff;
+    --admin-text-muted: #8b92a5;
+}
+
+body.admin-body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--admin-bg-light);
+    display: flex;
+    min-height: 100vh;
+}
+
+.admin-sidebar {
+    width: 250px;
+    background-color: var(--admin-bg-dark);
+    color: var(--admin-text-light);
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    z-index: 10;
+}
+
+.admin-brand {
+    padding: 20px;
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--admin-primary);
+    text-decoration: none;
+    letter-spacing: 1px;
+}
+
+.admin-brand:hover {
+    color: #e64a19;
+}
+
+.admin-nav {
+    flex-grow: 1;
+    padding-top: 20px;
+}
+
+.admin-nav-link {
+    display: flex;
+    align-items: center;
+    padding: 15px 25px;
+    color: var(--admin-text-muted);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.admin-nav-link i {
+    margin-right: 15px;
+    font-size: 1.2rem;
+    width: 20px;
+    text-align: center;
+}
+
+.admin-nav-link:hover, .admin-nav-link.active {
+    color: var(--admin-text-light);
+    background-color: rgba(255, 87, 34, 0.1);
+    border-left: 4px solid var(--admin-primary);
+}
+
+.admin-nav-link:hover i, .admin-nav-link.active i {
+    color: var(--admin-primary);
+}
+
+.admin-main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow-x: hidden;
+}
+
+.admin-header {
+    background-color: #fff;
+    padding: 15px 30px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.admin-user-info {
+    font-weight: 600;
+    color: #333;
+}
+
+.admin-container {
+    padding: 30px;
+    flex-grow: 1;
+}
+
+/* Dashboard KPI Cards */
+.kpi-card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+    transition: transform 0.3s ease;
+    border-bottom: 3px solid transparent;
+}
+
+.kpi-card:hover {
+    transform: translateY(-5px);
+    border-bottom-color: var(--admin-primary);
+}
+
+.kpi-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 15px;
+    background-color: rgba(255, 87, 34, 0.1);
+    color: var(--admin-primary);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.8rem;
+    margin-right: 20px;
+}
+
+.kpi-details h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #333;
+}
+
+.kpi-details p {
+    margin: 0;
+    color: var(--admin-text-muted);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+/* Charts and Tables containers */
+.admin-card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 25px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    margin-bottom: 30px;
+}
+
+.admin-card-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #333;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.table-admin th {
+    border-top: none;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    color: var(--admin-text-muted);
+}
+
+.table-admin td {
+    vertical-align: middle;
+}
+
+/* Sidebar Submenu Styles */
+.admin-nav-link {
+    justify-content: space-between;
+}
+
+.admin-nav-link span {
+    display: flex;
+    align-items: center;
+}
+
+.admin-nav-link.collapsed .toggle-icon {
+    transform: rotate(0deg);
+}
+
+.admin-nav-link:not(.collapsed) .toggle-icon {
+    transform: rotate(180deg);
+}
+
+.toggle-icon {
+    margin-right: 0 !important;
+    font-size: 1rem !important;
+    transition: transform 0.3s ease;
+}
+
+.admin-submenu {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.admin-submenu-link {
+    display: block;
+    padding: 12px 25px 12px 60px;
+    color: var(--admin-text-muted);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+    border-left: 4px solid transparent;
+}
+
+.admin-submenu-link:hover, .admin-submenu-link.active {
+    color: var(--admin-text-light);
+    background-color: rgba(255, 87, 34, 0.05);
+    border-left: 4px solid var(--admin-primary);
+}

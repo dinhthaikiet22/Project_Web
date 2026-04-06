@@ -31,7 +31,11 @@ try {
         $_SESSION['username'] = $user['username'];
         $_SESSION['role'] = $user['role'] ?? 'user';
 
-        header('Location: ' . BASE_URL . '?page=home');
+        if ($_SESSION['role'] === 'admin') {
+            header('Location: ' . BASE_URL . '?page=admin_dashboard');
+        } else {
+            header('Location: ' . BASE_URL . '?page=home');
+        }
         exit;
     }
 
