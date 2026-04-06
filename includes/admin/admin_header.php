@@ -30,7 +30,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
         </a>
         <?php
         $page = $page ?? $_GET['page'] ?? '';
-        $product_pages = ['admin_products', 'admin_categories', 'admin_brands'];
+        $product_pages = ['admin_bikes', 'admin_categories', 'admin_brands'];
         $order_pages = ['admin_orders', 'admin_refunds'];
         $customer_pages = ['admin_users', 'admin_admins'];
         $finance_pages = ['admin_transactions', 'admin_vnpay'];
@@ -48,7 +48,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
             </a>
             <div class="collapse <?= in_array($page, $product_pages) ? 'show' : '' ?>" id="productMenu">
                 <div class="admin-submenu">
-                    <a href="?page=admin_products" class="admin-submenu-link <?= ($page === 'admin_products') ? 'active' : '' ?>">Danh sách Xe</a>
+                    <a href="?page=admin_bikes" class="admin-submenu-link <?= ($page === 'admin_bikes') ? 'active' : '' ?>">Danh sách Xe</a>
                     <a href="?page=admin_categories" class="admin-submenu-link <?= ($page === 'admin_categories') ? 'active' : '' ?>">Danh mục</a>
                     <a href="?page=admin_brands" class="admin-submenu-link <?= ($page === 'admin_brands') ? 'active' : '' ?>">Thương hiệu</a>
                 </div>
