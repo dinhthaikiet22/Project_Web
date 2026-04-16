@@ -73,6 +73,14 @@ $priceRaw = trim((string)($_POST['price'] ?? ''));
 $location = trim((string)($_POST['location'] ?? ''));
 $description = trim((string)($_POST['description'] ?? ''));
 
+// --- BẮT ĐẦU: CODE BỔ SUNG ĐỂ NHẬN TỌA ĐỘ ---
+$latitudeRaw = trim((string)($_POST['latitude'] ?? ''));
+$longitudeRaw = trim((string)($_POST['longitude'] ?? ''));
+
+$latitude = ($latitudeRaw !== '' && is_numeric($latitudeRaw)) ? (float)$latitudeRaw : null;
+$longitude = ($longitudeRaw !== '' && is_numeric($longitudeRaw)) ? (float)$longitudeRaw : null;
+// --- KẾT THÚC: CODE BỔ SUNG ĐỂ NHẬN TỌA ĐỘ ---
+
 $categoryId = ctype_digit($categoryIdRaw) ? (int)$categoryIdRaw : 0;
 if ($categoryId === 0 && $categoryIdRaw !== '') {
     $categoryId = 1;
@@ -130,9 +138,10 @@ try {
 
     $conn->beginTransaction();
 
+    // --- BẮT ĐẦU: CẬP NHẬT LỆNH SQL ĐỂ LƯU THÊM LATITUDE VÀ LONGITUDE ---
     $insertBike = $conn->prepare(
-        'INSERT INTO bikes (user_id, category_id, title, price, brand, condition_status, description, image_url, location, status)
-         VALUES (:user_id, :category_id, :title, :price, :brand, :condition_status, :description, :image_url, :location, \'available\')'
+        'INSERT INTO bikes (user_id, category_id, title, price, brand, condition_status, description, image_url, location, latitude, longitude, status)
+         VALUES (:user_id, :category_id, :title, :price, :brand, :condition_status, :description, :image_url, :location, :latitude, :longitude, \'available\')'
     );
     $insertBike->execute([
         ':user_id' => $userId,
@@ -144,7 +153,10 @@ try {
         ':description' => $description,
         ':image_url' => $mainFileName,
         ':location' => $location,
+        ':latitude' => $latitude,
+        ':longitude' => $longitude,
     ]);
+    // --- KẾT THÚC: CẬP NHẬT LỆNH SQL ---
 
     $bikeId = (int)$conn->lastInsertId();
     if ($bikeId <= 0) {
@@ -164,7 +176,8 @@ try {
     $conn->commit();
 
     $_SESSION['success'] = 'Đăng tin thành công!';
-    header('Location: ' . BASE_URL . '?page=home');
+    // Mình sửa lại chuyển hướng về trang my-postings để bạn tiện xem thành quả vừa đăng
+    header('Location: ' . BASE_URL . '?page=my-postings');
     exit;
 } catch (PDOException $e) {
     if ($conn->inTransaction()) {
