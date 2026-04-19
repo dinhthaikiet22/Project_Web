@@ -1,18 +1,13 @@
 <?php
 declare(strict_types=1);
 
-// --- PHẦN 1: CODE XỬ LÝ DỮ LIỆU (BACKEND) ---
-
-// TẠM THỜI ẨN KIỂM TRA ĐĂNG NHẬP ĐỂ BẠN THIẾT KẾ UI
-/*
+// Kiểm tra đăng nhập thực tế
 if (!isset($_SESSION['user_id'])) {
     header('Location: ' . BASE_URL . '?page=login');
     exit;
 }
-*/
 
-// Giả lập user_id = 1 để lấy dữ liệu ra test giao diện (nếu chưa đăng nhập)
-$userId = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : 1; 
+$userId = (int)$_SESSION['user_id']; 
 
 /** @var PDO $conn */
 $conn = require __DIR__ . '/../config/db.php';
@@ -29,7 +24,6 @@ function bikeStatusLabel(array $bike): array
         $raw = trim($bike['status']);
         if ($raw !== '') {
             $isSold = in_array(mb_strtolower($raw), ['sold', 'đã bán', 'da ban'], true);
-            // Thay class badge của Bootstrap thành class ct-status của giao diện mới
             return [$isSold ? 'Đã bán' : 'Đang bán', $isSold ? 'ct-status ct-status--rejected' : 'ct-status ct-status--approved'];
         }
     }
@@ -49,19 +43,19 @@ function bikeStatusLabel(array $bike): array
         <a href="<?= BASE_URL ?>?page=home" class="ct-sidebar__brand">CYCLETRUST</a>
         
         <nav class="ct-sidebar__nav">
-            <a href="#" class="ct-sidebar__link">
+            <a href="<?= BASE_URL ?>?page=overview" class="ct-sidebar__link">
                 <i class="fa-solid fa-chart-pie ct-sidebar__icon"></i>
                 Tổng quan
             </a>
-            <a href="#" class="ct-sidebar__link active">
+            <a href="<?= BASE_URL ?>?page=my-postings" class="ct-sidebar__link active">
                 <i class="fa-solid fa-bicycle ct-sidebar__icon"></i>
                 Xe đang bán
             </a>
-            <a href="#" class="ct-sidebar__link">
-                <i class="fa-solid fa-file-invoice-dollar ct-sidebar__icon"></i>
-                Đơn hàng
+            <a href="<?= BASE_URL ?>?page=user/orders" class="ct-sidebar__link">
+               <i class="fa-solid fa-file-invoice-dollar ct-sidebar__icon"></i>
+               Đơn hàng
             </a>
-            <a href="#" class="ct-sidebar__link">
+            <a href="<?= BASE_URL ?>?page=user/profile" class="ct-sidebar__link">
                 <i class="fa-solid fa-user-gear ct-sidebar__icon"></i>
                 Cài đặt tài khoản
             </a>
@@ -104,7 +98,6 @@ function bikeStatusLabel(array $bike): array
                     <tbody>
                         <?php foreach ($bikes as $row): ?>
                             <?php
-                            // Xử lý dữ liệu từng dòng
                             $title = (string)($row['title'] ?? '');
                             $imageRaw = trim((string)($row['image_url'] ?? ''));
                             if ($imageRaw === '') {
@@ -112,7 +105,7 @@ function bikeStatusLabel(array $bike): array
                             } elseif (str_starts_with(strtolower($imageRaw), 'http')) {
                                 $imageFile = $imageRaw;
                             } else {
-                                $imageFile = BASE_URL . 'public/uploads/products/' . $imageRaw;
+                                $imageFile = BASE_URL . 'public/uploads/bikes/' . $imageRaw; // Sửa thư mục ảnh thành /bikes/ theo như code lưu ảnh
                             }
                             $price = isset($row['price']) ? (float)$row['price'] : 0;
                             $createdAt = (string)($row['created_at'] ?? '');
@@ -147,6 +140,9 @@ function bikeStatusLabel(array $bike): array
                                 
                                 <td style="text-align: right;">
                                     <div style="display: flex; justify-content: flex-end; gap: 6px;">
+                                        <a href="<?= BASE_URL ?>?page=bike-detail&id=<?= $id ?>" class="btn btn-ghost" style="padding: 6px 10px;" title="Xem xe">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </a>
                                         <a href="<?= BASE_URL ?>?page=edit-bike&id=<?= $id ?>" class="btn btn-ghost" style="padding: 6px 10px;" title="Sửa tin">
                                             <i class="fa-solid fa-pen"></i>
                                         </a>

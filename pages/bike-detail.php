@@ -592,18 +592,40 @@ echo '<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.
       });
   }
 
-  // Khởi tạo Bản đồ Leaflet bằng dữ liệu động từ Database
-  var lat = <?= $lat ?>; 
-  var lng = <?= $lng ?>;
+  // Lấy dữ liệu mặc định từ PHP
+  var defaultLat = <?= $lat ?>; 
+  var defaultLng = <?= $lng ?>;
   var locationName = "<?= htmlspecialchars($location !== '' ? $location : 'Hồ Chí Minh', ENT_QUOTES, 'UTF-8') ?>";
 
-  var map = L.map('singleBikeMap').setView([lat, lng], 13);
+  // Khởi tạo bản đồ tạm ở vị trí mặc định
+  var map = L.map('singleBikeMap').setView([defaultLat, defaultLng], 13);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors'
   }).addTo(map);
 
-  var marker = L.marker([lat, lng]).addTo(map);
+  var marker = L.marker([defaultLat, defaultLng]).addTo(map);
   marker.bindPopup("<b>Vị trí xe</b><br>" + locationName).openPopup();
+
+  // "BỘ NÃO" GEOCODING: Tự động dịch chữ thành tọa độ
+  if (locationName !== '' && locationName !== 'Chưa cập nhật') {
+      // Gắn thêm chữ "Vietnam" để hệ thống tìm kiếm chính xác hơn
+      var searchQuery = locationName + ", Vietnam"; 
+      
+      fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(searchQuery))
+        .then(response => response.json())
+        .then(data => {
+            if (data && data.length > 0) {
+                // Lấy tọa độ thật từ kết quả tìm kiếm
+                var realLat = data[0].lat;
+                var realLon = data[0].lon;
+                
+                // Nhấc bản đồ và ghim bay về đúng tọa độ mới
+                map.setView([realLat, realLon], 14);
+                marker.setLatLng([realLat, realLon]);
+            }
+        })
+        .catch(err => console.error('Lỗi dịch tọa độ Geocoding:', err));
+  }
 
 })();
 </script>
