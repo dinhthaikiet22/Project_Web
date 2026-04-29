@@ -43,7 +43,16 @@ $orderCode = $orderCodeParts[0];
 
 $isSuccess = false;
 if ($isValid && $vnp_ResponseCode == '00') {
-    // Chỉ xử lý Frontend, không gọi Database để tránh conflict với IPN
+    $conn = require __DIR__ . '/../config/db.php';
+    try {
+        $stmtUpdate = $conn->prepare("UPDATE orders SET order_status = 'paid', payment_method = 'vnpay' WHERE order_code = ?");
+        $stmtUpdate->execute([$orderCode]);
+        
+        $stmtBike = $conn->prepare("UPDATE bikes SET status = 'sold' WHERE id = (SELECT bike_id FROM orders WHERE order_code = ? LIMIT 1)");
+        $stmtBike->execute([$orderCode]);
+    } catch (Exception $e) {
+        error_log("Update order error in vnpay_return: " . $e->getMessage());
+    }
     $isSuccess = true;
 }
 ?>

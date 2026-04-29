@@ -1,6 +1,9 @@
 <?php
 declare(strict_types=1);
-ob_start();
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+// ob_start(); // commented out for debugging
+set_time_limit(5);
 
 session_start();
 
@@ -39,8 +42,8 @@ if (!is_file($pageFile)) {
 // Pages that ONLY perform actions then redirect (no HTML output).
 // Must be included BEFORE header.php so header() calls are never blocked.
 // Note: edit-bike.php renders an HTML form, so it stays in the normal flow.
-// Pages that are purely action-handlers (redirect after processing, no HTML output).
-$actionPages = ['delete-bike'];
+// Pages that are purely action-handlers or custom print layouts (no header/footer).
+$actionPages = ['delete-bike', 'admin_order_print'];
 if (in_array($page, $actionPages, true)) {
     require $pageFile;
     exit;

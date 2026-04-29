@@ -226,9 +226,9 @@ function getPaymentMethodBadge($method): string {
                                     <a href="index.php?page=admin_order_detail&id=<?= $ord['id'] ?>" class="btn btn-sm btn-outline-dark border-0 rounded-circle" style="width:34px; height:34px; display:flex; align-items:center; justify-content:center;" title="Xem chi tiết">
                                         <i class="fa-solid fa-eye"></i>
                                     </a>
-                                    <button class="btn btn-sm btn-outline-dark border-0 rounded-circle" style="width:34px; height:34px; display:flex; align-items:center; justify-content:center;" onclick="window.print()" title="In đơn">
+                                    <a href="index.php?page=admin_order_print&id=<?= $ord['id'] ?>" target="_blank" class="btn btn-sm btn-outline-dark border-0 rounded-circle" style="width:34px; height:34px; display:flex; align-items:center; justify-content:center;" title="In đơn">
                                         <i class="fa-solid fa-print"></i>
-                                    </button>
+                                    </a>
                                 </div>
                             </td>
                         </tr>

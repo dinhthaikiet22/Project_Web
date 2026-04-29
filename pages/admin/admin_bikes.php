@@ -28,6 +28,8 @@ if ($keyword !== '') {
 if ($statusFilter !== '') {
     if ($statusFilter == 'pending') {
         $sql .= " AND (b.status = 'pending' OR b.status = 'pending_delivery' OR b.status IS NULL OR b.status = '') ";
+    } elseif ($statusFilter === 'sold') {
+        $sql .= " AND b.status IN ('banned', 'sold', 'out_of_stock') ";
     } else {
         $sql .= " AND b.status = ? ";
         $params[] = $statusFilter;
@@ -70,7 +72,6 @@ try {
                 <option value="">Tất cả trạng thái</option>
                 <option value="pending" <?= $statusFilter === 'pending' ? 'selected' : '' ?>>Chờ duyệt</option>
                 <option value="available" <?= $statusFilter === 'available' ? 'selected' : '' ?>>Đang hiển thị</option>
-                <option value="banned" <?= $statusFilter === 'banned' ? 'selected' : '' ?>>Bị khóa</option>
                 <option value="sold" <?= $statusFilter === 'sold' ? 'selected' : '' ?>>Khóa / Hết hàng</option>
             </select>
         </div>
@@ -179,6 +180,31 @@ try {
         </table>
     </div>
 </div>
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const msg = urlParams.get('msg');
+    const error = urlParams.get('error');
+
+    if (msg === 'success') {
+        Swal.fire({
+            title: 'Thành công!',
+            text: 'Cập nhật trạng thái tin đăng thành công.',
+            icon: 'success',
+            confirmButtonColor: '#FF5722'
+        });
+        window.history.replaceState({}, document.title, window.location.pathname + "?page=admin_bikes");
+    } else if (error) {
+        Swal.fire({
+            title: 'Lỗi!',
+            text: 'Không thể cập nhật trạng thái. Vui lòng thử lại sau.',
+            icon: 'error',
+            confirmButtonColor: '#dc3545'
+        });
+        window.history.replaceState({}, document.title, window.location.pathname + "?page=admin_bikes");
+    }
+</script>
 
 <?php 
 require_once __DIR__ . '/../../includes/admin/admin_footer.php'; 

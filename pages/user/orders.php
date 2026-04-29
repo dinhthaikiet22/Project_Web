@@ -139,10 +139,18 @@ function getShippingBadge($method) {
                         </div>
                         
                         <div class="card-footer bg-white border-top-0 px-4 pb-4 pt-1 text-end">
-                            <?php if ($ord['order_status'] === 'waiting_payment'): ?>
-                                <button type="button" onclick="Swal.fire('Vui lòng chờ','Chủ shop đang xác nhận đơn hoặc đang chờ khoản tiền check nổi rớt vào QR.','info')" class="btn btn-sm btn-dark fw-bold px-3 py-2 rounded-pill shadow-sm">
-                                    <i class="fa-regular fa-clock me-1"></i> Chờ Xác nhận
-                                </button>
+                            <?php if ($ord['order_status'] === 'paid'): ?>
+                                <span class="badge bg-success px-3 py-2 rounded-pill shadow-sm" style="font-size:0.9rem;"><i class="fa-solid fa-check-circle me-1"></i> Đã thanh toán</span>
+                            <?php elseif ($ord['order_status'] === 'waiting_payment'): ?>
+                                <?php if ($ord['payment_method'] === 'vnpay'): ?>
+                                    <button type="button" onclick="window.location.href='<?= BASE_URL ?>modules/order/vnpay_repay.php?order_code=<?= $ord['order_code'] ?>'" class="btn btn-sm fw-bold px-3 py-2 rounded-pill shadow-sm" style="background:#FF5722;color:#fff;">
+                                        <i class="fa-solid fa-credit-card me-1"></i> Thanh toán ngay
+                                    </button>
+                                <?php else: ?>
+                                    <button type="button" onclick="Swal.fire('Vui lòng chờ','Chủ shop đang xác nhận đơn hoặc đang chờ khoản tiền check nổi rớt vào QR.','info')" class="btn btn-sm btn-dark fw-bold px-3 py-2 rounded-pill shadow-sm">
+                                        <i class="fa-regular fa-clock me-1"></i> Chờ Xác nhận
+                                    </button>
+                                <?php endif; ?>
                             <?php elseif ($ord['order_status'] === 'shipping'): ?>
                                 <button type="button" onclick="confirmReceive('<?= $ord['order_code'] ?>')" class="btn btn-sm fw-bold px-3 py-2 rounded-pill shadow-sm" style="background:#10b981;color:#fff;">
                                     <i class="fa-solid fa-box-open me-1"></i> Đã Nhận Hàng
@@ -202,9 +210,13 @@ function getShippingBadge($method) {
                         </div>
 
                         <div class="card-footer bg-white border-top-0 px-4 pb-4 pt-1 text-end">
-                            <?php if ($ord['order_status'] === 'waiting_payment'): ?>
+                            <?php if ($ord['order_status'] === 'paid'): ?>
+                                <button type="button" onclick="Swal.fire('Thanh toán hoàn tất','Khách hàng đã thanh toán qua VNPAY an toàn. Bạn có thể tiến hành giao hàng.','success')" class="btn btn-sm fw-bold px-3 py-2 rounded-pill shadow-sm" style="background:#10b981; color:#fff;">
+                                    <i class="fa-solid fa-truck-fast me-1"></i> Chuẩn bị Giao Xe
+                                </button>
+                            <?php elseif ($ord['order_status'] === 'waiting_payment'): ?>
                                 <button type="button" onclick="Swal.fire('Xác nhận Đơn','Hãy liên hệ khách hàng để xác nhận COD hoặc chờ check biến động số dư VietQR rồi mới tiến hành đi lệnh Giao hàng trên hệ thống vận chuyển nhé!','info')" class="btn btn-sm fw-bold px-3 py-2 rounded-pill shadow-sm" style="background:#FF5722; color:#fff;">
-                                    <i class="fa-solid fa-check me-1"></i> Duyệt Đơn
+                                    <i class="fa-solid fa-check me-1"></i> Duyệt Đơn COD/QR
                                 </button>
                             <?php endif; ?>
                             <a href="<?= BASE_URL ?>?page=bike-detail&id=<?= $ord['bike_id'] ?>" class="btn btn-sm btn-outline-secondary fw-bold px-3 py-2 rounded-pill ms-2">

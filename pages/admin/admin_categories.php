@@ -6,30 +6,18 @@ require_once __DIR__ . '/../../includes/admin/admin_header.php';
 /** @var PDO $conn */
 $conn = require_once __DIR__ . '/../../config/db.php';
 
-// Fetch categories with bike count
+// Fetch categories with bike count and sorting by ID ASC
 try {
-    // Thử truy vấn có các cột mở rộng (description, image_url)
-    $sql = "SELECT c.id, c.name, c.description, c.image_url, 
+    $sql = "SELECT c.id, c.name, c.slug, c.description, c.image_url, 
             (SELECT COUNT(*) FROM bikes b WHERE b.category_id = c.id) AS bike_count
             FROM categories c
-            ORDER BY c.id DESC";
+            ORDER BY c.id ASC";
     $stmt = $conn->prepare($sql);
     $stmt->execute();
     $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    // Fallback: Nếu CSDL cũ chưa có cột description/image_url thì bỏ qua để không sập trang
-    try {
-        $sqlFallback = "SELECT c.id, c.name, '' AS description, '' AS image_url,
-                (SELECT COUNT(*) FROM bikes b WHERE b.category_id = c.id) AS bike_count
-                FROM categories c
-                ORDER BY c.id DESC";
-        $stmt = $conn->prepare($sqlFallback);
-        $stmt->execute();
-        $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    } catch (PDOException $e2) {
-        $categories = [];
-        echo '<div class="alert alert-danger">Lỗi cơ sở dữ liệu: ' . htmlspecialchars($e2->getMessage()) . '</div>';
-    }
+    $categories = [];
+    echo '<div class="alert alert-danger mx-3 mt-3">Lỗi cơ sở dữ liệu: ' . htmlspecialchars($e->getMessage()) . '</div>';
 }
 ?>
 
@@ -38,7 +26,7 @@ try {
 </div>
 
 <div class="row g-4 align-items-start">
-    <!-- Cột trái: Form Thêm Danh mục (4 col) -->
+    <!-- Cột trái: Form Thêm Danh mục -->
     <div class="col-lg-4">
         <div class="admin-card border-0 shadow-sm rounded-4 sticky-top" style="top: 20px;">
             <div class="admin-card-title mb-4">
@@ -58,11 +46,6 @@ try {
                     <textarea id="cat_desc" name="description" class="form-control bg-light" rows="3" placeholder="Mô tả công năng, dòng xe..."></textarea>
                 </div>
                 
-                <div class="mb-4">
-                    <label for="cat_icon" class="form-label fw-semibold">Icon / Ảnh đại diện (nếu có)</label>
-                    <input type="file" id="cat_icon" name="icon" class="form-control bg-light" accept="image/*">
-                </div>
-                
                 <button type="submit" class="btn text-white fw-bold w-100 py-2 d-flex align-items-center justify-content-center gap-2 shadow-sm" style="background-color: #FF5722; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
                     <i class="fa-solid fa-plus"></i> Tạo danh mục
                 </button>
@@ -70,7 +53,7 @@ try {
         </div>
     </div>
 
-    <!-- Cột phải: Bảng Dữ liệu (8 col) -->
+    <!-- Cột phải: Bảng Dữ liệu -->
     <div class="col-lg-8">
         <div class="admin-card border-0 shadow-sm rounded-4">
             <div class="table-responsive">
@@ -78,7 +61,8 @@ try {
                     <thead class="table-light">
                         <tr>
                             <th scope="col" class="py-3" style="width: 50px;">ID</th>
-                            <th scope="col" class="py-3">Thông tin Danh mục</th>
+                            <th scope="col" class="py-3">Danh mục & Slug</th>
+                            <th scope="col" class="py-3">Mô tả</th>
                             <th scope="col" class="py-3 text-center">Số lượng Xe</th>
                             <th scope="col" class="py-3 text-end">Thao tác</th>
                         </tr>
@@ -86,7 +70,7 @@ try {
                     <tbody>
                         <?php if (empty($categories)): ?>
                             <tr>
-                                <td colspan="4" class="text-center py-5 text-muted">
+                                <td colspan="5" class="text-center py-5 text-muted">
                                     <i class="fa-solid fa-folder-open fs-1 mb-3"></i>
                                     <p class="mb-0">Hệ thống chưa có danh mục nào.</p>
                                 </td>
@@ -98,18 +82,30 @@ try {
                                     <td>
                                         <div class="d-flex align-items-center gap-3">
                                             <?php if (!empty($cat['image_url'])): ?>
-                                                <img src="<?= str_starts_with((string)$cat['image_url'], 'http') ? htmlspecialchars((string)$cat['image_url'], ENT_QUOTES, 'UTF-8') : 'public/uploads/categories/' . rawurlencode((string)$cat['image_url']) ?>" alt="icon" style="width: 45px; height: 45px; border-radius: 8px; object-fit: cover;">
+                                                <img src="<?= BASE_URL ?>public/assets/images/categories/<?= htmlspecialchars($cat['image_url'], ENT_QUOTES, 'UTF-8') ?>" 
+                                                     alt="<?= htmlspecialchars((string)$cat['name'], ENT_QUOTES, 'UTF-8') ?>"
+                                                     style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px; border: 1px solid #eee;"
+                                                     onerror="this.onerror=null; this.outerHTML='<div class=\'bg-light border rounded-3 shadow-sm d-flex align-items-center justify-content-center\' style=\'width: 50px; height: 50px; color: #FF5722; font-size: 1.25rem;\'><i class=\'fa-solid fa-bicycle\'></i></div>'">
                                             <?php else: ?>
-                                                <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 45px; height: 45px; color: #FF5722; font-size: 1.25rem;">
+                                                <div class="bg-light border rounded-3 shadow-sm d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; color: #FF5722; font-size: 1.25rem;">
                                                     <i class="fa-regular fa-folder"></i>
                                                 </div>
                                             <?php endif; ?>
                                             <div>
-                                                <div class="fw-bold text-dark fs-6"><?= htmlspecialchars((string)$cat['name'], ENT_QUOTES, 'UTF-8') ?></div>
-                                                <div class="text-muted small text-truncate" style="max-width: 250px;" title="<?= htmlspecialchars((string)($cat['description'] ?? ''), ENT_QUOTES, 'UTF-8') ?>">
-                                                    <?= htmlspecialchars((string)($cat['description'] ?? 'Chưa có mô tả chi tiết'), ENT_QUOTES, 'UTF-8') ?>
+                                                <div class="fw-bold text-dark fs-5 d-flex align-items-center gap-2 mb-1">
+                                                    <?= htmlspecialchars((string)$cat['name'], ENT_QUOTES, 'UTF-8') ?>
                                                 </div>
+                                                <?php if (!empty($cat['slug'])): ?>
+                                                    <span class="badge bg-light text-secondary border fw-normal" style="font-size: 0.8rem;">
+                                                        <i class="fa-solid fa-link me-1"></i><?= htmlspecialchars((string)$cat['slug'], ENT_QUOTES, 'UTF-8') ?>
+                                                    </span>
+                                                <?php endif; ?>
                                             </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="text-muted small" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; max-width: 250px;" title="<?= htmlspecialchars((string)($cat['description'] ?? ''), ENT_QUOTES, 'UTF-8') ?>">
+                                            <?= htmlspecialchars((string)($cat['description'] ?? 'Chưa có mô tả chi tiết'), ENT_QUOTES, 'UTF-8') ?>
                                         </div>
                                     </td>
                                     <td class="text-center">

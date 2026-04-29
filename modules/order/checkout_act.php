@@ -104,9 +104,11 @@ try {
         $orderStatus
     ]);
 
-    // 5. Cập nhật Status Xe
-    $stmtUpdateBike = $conn->prepare("UPDATE bikes SET status = 'pending_delivery' WHERE id = ?");
-    $stmtUpdateBike->execute([$bikeId]);
+    // 5. Cập nhật Status Xe (Chỉ cập nhật nếu không phải VNPAY)
+    if ($paymentMethod !== 'vnpay') {
+        $stmtUpdateBike = $conn->prepare("UPDATE bikes SET status = 'pending_delivery' WHERE id = ?");
+        $stmtUpdateBike->execute([$bikeId]);
+    }
 
     $conn->commit();
 
@@ -115,12 +117,12 @@ try {
         require_once __DIR__ . '/../../config/config_vnpay.php';
         
         $vnp_TxnRef = $orderCode . '_' . time(); // Đảm bảo duy nhất
-        $vnp_OrderInfo = "Thanh_toan_don_hang_" . $orderCode;
-        $vnp_OrderType = 'billpayment';
-        $vnp_Amount = $totalPrice * 100;
+        $vnp_OrderInfo = "ThanhToanCycleTrust_" . $orderCode;
+        $vnp_OrderType = 'other';
+        $vnp_Amount = (int)($totalPrice * 100);
         $vnp_Locale = 'vn';
         $vnp_BankCode = '';
-        $vnp_IpAddr = $_SERVER['REMOTE_ADDR'];
+        $vnp_IpAddr = $_SERVER['REMOTE_ADDR'] === '::1' ? '127.0.0.1' : $_SERVER['REMOTE_ADDR'];
         
         $vnp_CreateDate = date('YmdHis');
         $vnp_ExpireDate = date('YmdHis', strtotime('+15 minutes', strtotime($vnp_CreateDate)));
@@ -165,7 +167,8 @@ try {
             'status' => 'success',
             'message' => 'Đang chuyển hướng VNPAY...',
             'payment_url' => $vnp_Url,
-            'order_code' => $orderCode
+            'order_code' => $orderCode,
+            'debug_hash' => $hashdata
         ]);
         exit;
     }

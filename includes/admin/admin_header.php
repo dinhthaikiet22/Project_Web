@@ -28,6 +28,11 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
         <a href="?page=admin_dashboard" class="admin-brand">
             <i class="fa-solid fa-motorcycle"></i> CycleTrust
         </a>
+        <div class="px-3 py-2 border-bottom border-secondary mb-2" style="border-color: rgba(255,255,255,0.1) !important;">
+            <a href="index.php" class="btn btn-outline-light w-100 btn-sm text-start" target="_blank" style="opacity: 0.8; transition: 0.3s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">
+                <i class="fa-solid fa-external-link-alt me-2"></i> Xem Website
+            </a>
+        </div>
         <?php
         $page = $page ?? $_GET['page'] ?? '';
         $product_pages = ['admin_bikes', 'admin_categories', 'admin_brands'];
@@ -115,10 +120,43 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     <!-- Main Content Wrapper -->
     <div class="admin-main-content">
         <!-- Top Header -->
-        <header class="admin-header">
-            <div class="admin-user-info">
-                <i class="fa-solid fa-user-shield text-warning me-2"></i> 
-                Welcome, <?= htmlspecialchars($_SESSION['username'] ?? 'Admin') ?>
+        <header class="admin-header d-flex justify-content-between align-items-center w-100">
+            <!-- Left: Breadcrumb & Title -->
+            <div class="d-flex flex-column">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-1">
+                        <li class="breadcrumb-item"><a href="#" class="text-muted text-decoration-none small">Admin</a></li>
+                        <li class="breadcrumb-item active text-dark fw-bold small" aria-current="page">CycleTrust</li>
+                    </ol>
+                </nav>
+            </div>
+
+            <div class="d-flex align-items-center gap-3 bg-white p-2 rounded-pill shadow-sm">
+                <!-- View Website Button -->
+                <a href="index.php" class="btn btn-sm text-muted rounded-pill px-3 d-flex align-items-center fw-medium" target="_blank">
+                    <i class="fa-solid fa-external-link-alt me-2" style="color: #FF5C00;"></i>Xem Website
+                </a>
+                
+                <!-- Right: Profile Widget -->
+                <div class="dropdown">
+                    <button class="btn border-0 p-0 text-start d-flex align-items-center dropdown-toggle profile-widget pe-3" type="button" id="adminDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="background:transparent;">
+                        <div class="position-relative ms-2">
+                            <img src="https://ui-avatars.com/api/?name=<?= urlencode($_SESSION['username'] ?? 'Admin') ?>&background=FF5C00&color=fff&bold=true" alt="Admin Avatar" class="rounded-circle shadow-sm" style="width: 42px; height: 42px; border: 2px solid #FFD700; object-fit: cover;">
+                            <span class="position-absolute bottom-0 end-0 p-1 bg-success border border-light rounded-circle" style="width: 12px; height: 12px; transform: translate(10%, 10%);">
+                                <span class="visually-hidden">Online</span>
+                            </span>
+                        </div>
+                        <div class="ms-2 d-none d-md-block text-dark lh-sm flex-grow-1">
+                            <div class="fw-bold fs-6"><?= htmlspecialchars($_SESSION['username'] ?? 'Admin') ?></div>
+                        </div>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 mt-2" aria-labelledby="adminDropdown" style="min-width: 200px;">
+                        <li><a class="dropdown-item py-2" href="?page=admin_profile"><i class="fa-solid fa-user me-2" style="color: #FF5C00;"></i> Trang cá nhân</a></li>
+                        <li><a class="dropdown-item py-2" href="?page=admin_settings"><i class="fa-solid fa-cog me-2 text-secondary"></i> Cài đặt hệ thống</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item py-2 text-danger fw-medium" href="modules/auth/logout.php"><i class="fa-solid fa-sign-out-alt me-2"></i> Đăng xuất</a></li>
+                    </ul>
+                </div>
             </div>
         </header>
 
