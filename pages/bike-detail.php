@@ -69,6 +69,8 @@ $title        = htmlspecialchars((string)($bike['title'] ?? ''), ENT_QUOTES, 'UT
 $brand        = trim((string)($bike['brand'] ?? ''));
 $condition    = trim((string)($bike['condition_status'] ?? ''));
 $location     = trim((string)($bike['location'] ?? ''));
+$lat = isset($bike['latitude']) && $bike['latitude'] !== null ? (float)$bike['latitude'] : 10.7769;
+$lng = isset($bike['longitude']) && $bike['longitude'] !== null ? (float)$bike['longitude'] : 106.7009;
 $description  = (string)($bike['description'] ?? '');
 $categoryName = trim((string)($bike['category_name'] ?? ''));
 $categoryId   = (int)($bike['category_id'] ?? 0);
@@ -106,6 +108,16 @@ if ($categoryId > 0) {
         $similarBikes = [];
     }
 }
+
+// Giả lập một hàm nhỏ để bạn của bạn sau này định dạng tiền tệ nếu chưa có
+if (!function_exists('formatCurrency')) {
+    function formatCurrency($amount) {
+        return number_format((float)$amount, 0, ',', '.') . ' đ';
+    }
+}
+
+// BẮT BUỘC: Nhúng Leaflet CSS cho Bản đồ
+echo '<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />';
 ?>
 <style>
 .bd-main-img {
@@ -372,14 +384,22 @@ if ($categoryId > 0) {
           </div>
         </div>
 
-        <div class="bg-white rounded-3 border p-4 p-md-5">
+        <div class="bg-white rounded-3 border p-4 p-md-5 mb-4">
           <h2 class="h5 fw-bold mb-3">Mô tả chi tiết</h2>
           <div style="font-size:1.02rem;line-height:1.85;color:#374151;">
             <?= nl2br(htmlspecialchars($description !== '' ? $description : 'Người bán chưa bổ sung mô tả.', ENT_QUOTES, 'UTF-8')) ?>
           </div>
         </div>
 
-      </div>
+        <div class="bg-white rounded-3 border p-4 p-md-5 mb-4">
+            <h2 class="h5 fw-bold mb-3">Vị trí xem xe</h2>
+            <div id="singleBikeMap" style="width: 100%; height: 350px; border-radius: 12px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); z-index: 1;"></div>
+            <p class="text-muted mt-3 mb-0" style="font-size: 0.95rem;">
+                <i class="fa-solid fa-location-dot me-2"></i> 
+                Khu vực: <strong><?= htmlspecialchars($location !== '' ? $location : 'Chưa cập nhật', ENT_QUOTES, 'UTF-8') ?></strong>
+            </p>
+        </div>
+        </div>
 
       <div class="col-12 col-lg-4">
         <div class="bd-sticky-card">
@@ -555,17 +575,57 @@ if ($categoryId > 0) {
   </div>
 </section>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 <script>
 (function () {
+  // Logic đổi ảnh Thumbnail
   var main = document.getElementById('bdMainImg');
   var row  = document.getElementById('bdThumbRow');
-  if (!main || !row) return;
-  row.querySelectorAll('.bd-thumb').forEach(function (img) {
-    img.addEventListener('click', function () {
-      main.src = img.getAttribute('data-src');
-      row.querySelectorAll('.bd-thumb').forEach(function (t) { t.classList.remove('active'); });
-      img.classList.add('active');
-    });
-  });
+  if (main && row) {
+      row.querySelectorAll('.bd-thumb').forEach(function (img) {
+        img.addEventListener('click', function () {
+          main.src = img.getAttribute('data-src');
+          row.querySelectorAll('.bd-thumb').forEach(function (t) { t.classList.remove('active'); });
+          img.classList.add('active');
+        });
+      });
+  }
+
+  // Lấy dữ liệu mặc định từ PHP
+  var defaultLat = <?= $lat ?>; 
+  var defaultLng = <?= $lng ?>;
+  var locationName = "<?= htmlspecialchars($location !== '' ? $location : 'Hồ Chí Minh', ENT_QUOTES, 'UTF-8') ?>";
+
+  // Khởi tạo bản đồ tạm ở vị trí mặc định
+  var map = L.map('singleBikeMap').setView([defaultLat, defaultLng], 13);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  var marker = L.marker([defaultLat, defaultLng]).addTo(map);
+  marker.bindPopup("<b>Vị trí xe</b><br>" + locationName).openPopup();
+
+  // "BỘ NÃO" GEOCODING: Tự động dịch chữ thành tọa độ
+  if (locationName !== '' && locationName !== 'Chưa cập nhật') {
+      // Gắn thêm chữ "Vietnam" để hệ thống tìm kiếm chính xác hơn
+      var searchQuery = locationName + ", Vietnam"; 
+      
+      fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(searchQuery))
+        .then(response => response.json())
+        .then(data => {
+            if (data && data.length > 0) {
+                // Lấy tọa độ thật từ kết quả tìm kiếm
+                var realLat = data[0].lat;
+                var realLon = data[0].lon;
+                
+                // Nhấc bản đồ và ghim bay về đúng tọa độ mới
+                map.setView([realLat, realLon], 14);
+                marker.setLatLng([realLat, realLon]);
+            }
+        })
+        .catch(err => console.error('Lỗi dịch tọa độ Geocoding:', err));
+  }
+
 })();
 </script>
