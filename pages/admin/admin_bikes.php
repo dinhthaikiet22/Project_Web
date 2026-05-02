@@ -35,8 +35,7 @@ if ($statusFilter !== '') {
         $params[] = $statusFilter;
     }
 }
-
-$sql .= " ORDER BY b.created_at DESC";
+$sql .= " ORDER BY b.id DESC";
 
 try {
     $stmt = $conn->prepare($sql);
@@ -126,11 +125,11 @@ try {
                             <td class="fw-semibold text-muted">#<?= $bike['id'] ?></td>
                             <td>
                                 <div class="d-flex align-items-center gap-3">
-                                    <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; min-width: 48px;">
+                                    <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; min-width: 60px;">
                                         <?php if (!empty($bike['image_url'])): ?>
-                                            <img src="<?= str_starts_with($bike['image_url'], 'http') ? htmlspecialchars($bike['image_url'], ENT_QUOTES, 'UTF-8') : 'public/uploads/bikes/' . rawurlencode($bike['image_url']) ?>" alt="Bike" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;">
+                                            <img src="public/uploads/bikes/<?= $bike['image_url'] ?>" onerror="this.src='public/assets/images/categories/road-bike.jpg'" alt="Bike" style="width: 60px; height: 60px; object-fit: cover; border-radius: 6px; border: 1px solid #eee;">
                                         <?php else: ?>
-                                            <i class="fa-solid fa-motorcycle text-muted fs-4"></i>
+                                            <img src="public/assets/images/categories/road-bike.jpg" alt="Bike" style="width: 60px; height: 60px; object-fit: cover; border-radius: 6px; border: 1px solid #eee;">
                                         <?php endif; ?>
                                     </div>
                                     <div>

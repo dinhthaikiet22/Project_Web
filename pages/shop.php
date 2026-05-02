@@ -498,14 +498,6 @@ $sizes = ['S', 'M', 'L', 'XL'];
         <?php if (!empty($bikes)): ?>
           <div class="row g-4">
             <?php foreach ($bikes as $row):
-              $imageUrl = trim((string)($row['image_url'] ?? ''));
-              if ($imageUrl === '') {
-                  $imgSrc = $defaultBikeImage;
-              } elseif (str_starts_with(strtolower($imageUrl), 'http')) {
-                  $imgSrc = $imageUrl;
-              } else {
-                  $imgSrc = BASE_URL . 'public/uploads/bikes/' . $imageUrl;
-              }
               $rTitle     = htmlspecialchars((string)($row['title'] ?? ''), ENT_QUOTES, 'UTF-8');
               $rBrand     = htmlspecialchars(trim((string)($row['brand'] ?? '')), ENT_QUOTES, 'UTF-8');
               $rLoc       = htmlspecialchars(trim((string)($row['location'] ?? '')), ENT_QUOTES, 'UTF-8');
@@ -518,13 +510,24 @@ $sizes = ['S', 'M', 'L', 'XL'];
               <div class="col-12 col-sm-6 col-xl-4">
                 <article class="shop-bike-card">
                   <a href="<?= $detailUrl ?>" tabindex="-1" aria-hidden="true">
-                    <img
-                      class="shop-bike-card__img"
-                      src="<?= htmlspecialchars($imgSrc, ENT_QUOTES, 'UTF-8') ?>"
-                      alt="<?= $rTitle ?>"
-                      loading="lazy"
-                      onerror="this.onerror=null;this.src='<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>public/assets/images/default-bike.jpg';"
-                    >
+                    <?php if (!empty($row['image_url'])): ?>
+                      <img
+                        class="shop-bike-card__img"
+                        src="<?= BASE_URL ?>public/uploads/bikes/<?= rawurlencode($row['image_url']) ?>"
+                        alt="<?= $rTitle ?>"
+                        loading="lazy"
+                        onerror="this.onerror=null;this.src='<?= BASE_URL ?>public/assets/images/categories/road-bike.jpg';"
+                        style="object-fit: cover;"
+                      >
+                    <?php else: ?>
+                      <img
+                        class="shop-bike-card__img"
+                        src="<?= BASE_URL ?>public/assets/images/categories/road-bike.jpg"
+                        alt="<?= $rTitle ?>"
+                        loading="lazy"
+                        style="object-fit: cover;"
+                      >
+                    <?php endif; ?>
                   </a>
                   <div class="shop-bike-card__body">
                     <div class="shop-bike-card__title"><?= $rTitle ?></div>

@@ -168,24 +168,23 @@ $defaultBikeImage = BASE_URL . 'public/assets/images/default-bike.jpg';
     <?php if (!empty($featuredBikes)): ?>
       <div class="row g-5">
         <?php foreach ($featuredBikes as $row): ?>
-          <?php
-          $imageUrl = trim((string)($row['image_url'] ?? ''));
-          if ($imageUrl === '') {
-              $img_src = $defaultBikeImage;
-          } elseif (str_starts_with(strtolower($imageUrl), 'http')) {
-              $img_src = $imageUrl;
-          } else {
-              $img_src = BASE_URL . 'public/uploads/bikes/' . $imageUrl;
-          }
-          ?>
           <div class="col-12 col-sm-6 col-lg-3">
             <article class="ct-bike-card h-100 d-flex flex-column">
               <div class="ct-bike-card__media">
-                <img
-                  src="<?= htmlspecialchars($img_src, ENT_QUOTES, 'UTF-8') ?>"
-                  alt="<?= htmlspecialchars((string)($row['title'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
-                  onerror="this.onerror=null;this.src='public/assets/images/default-bike.jpg';"
-                >
+                <?php if (!empty($row['image_url'])): ?>
+                  <img
+                    src="<?= BASE_URL ?>public/uploads/bikes/<?= rawurlencode($row['image_url']) ?>"
+                    alt="<?= htmlspecialchars((string)($row['title'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
+                    onerror="this.onerror=null;this.src='<?= BASE_URL ?>public/assets/images/categories/road-bike.jpg';"
+                    style="object-fit: cover; width: 100%; height: 100%;"
+                  >
+                <?php else: ?>
+                  <img
+                    src="<?= BASE_URL ?>public/assets/images/categories/road-bike.jpg"
+                    alt="<?= htmlspecialchars((string)($row['title'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
+                    style="object-fit: cover; width: 100%; height: 100%;"
+                  >
+                <?php endif; ?>
               </div>
               <div class="ct-bike-card__body d-flex flex-column flex-grow-1">
                 <h3 class="ct-bike-card__title">
