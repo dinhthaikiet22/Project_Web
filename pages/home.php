@@ -18,24 +18,68 @@ try {
 $defaultBikeImage = BASE_URL . 'public/assets/images/default-bike.jpg';
 ?>
 
+<style>
+.hero-banner {
+    position: relative;
+    overflow: hidden;
+    height: 100vh;
+}
+.hero-video {
+    position: absolute;
+    width: 100%;
+    height: 100vh;
+    object-fit: cover;
+    z-index: -1;
+    top: 0;
+    left: 0;
+}
+.hero-overlay {
+    position: absolute;
+    width: 100%;
+    height: 100vh;
+    /* Gradient tối dồn về bên trái để text nổi bật, bên phải trong suốt để thấy rõ xe/người trong video */
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.5) 45%, rgba(0, 0, 0, 0) 100%);
+    z-index: 0;
+    top: 0;
+    left: 0;
+}
+.hero-content-box {
+    max-width: 650px;
+    padding-bottom: 5vh; /* Nâng nhẹ nội dung lên trên */
+}
+@media (max-width: 768px) {
+    .hero-overlay {
+        background: linear-gradient(180deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.5) 60%, rgba(0, 0, 0, 0.1) 100%);
+    }
+    .hero-content-box {
+        max-width: 100%;
+    }
+}
+</style>
 <section class="hero-banner">
-  <div class="hero-banner__overlay" aria-hidden="true"></div>
+  <video autoplay muted loop playsinline poster="<?= BASE_URL ?>public/assets/images/hero-fallback.jpg" class="hero-video" style="display: block !important; visibility: visible !important;">
+    <source src="public/assets/videos/hero-bg.mp4" type="video/mp4">
+  </video>
+  <div class="hero-overlay"></div>
   <div class="hero-banner__content">
     <div class="hero-banner__inner">
-      <div class="hero-banner__kicker">
-        <i class="fa-solid fa-shield-halved"></i>
-        Minh bạch thông số • Giao dịch an tâm
+      <div class="hero-content-box">
+        <div class="hero-banner__kicker">
+          <i class="fa-solid fa-shield-halved"></i>
+          Minh bạch thông số • Giao dịch an tâm
+        </div>
+        <h1 class="hero-banner__title" style="font-size: clamp(2.4rem, 5.5vw, 5rem);">
+          KHÁM PHÁ XE ĐẠP<br>
+          <span class="ct-accent">CHÍNH HÃNG</span>
+        </h1>
+        <div class="hero-banner__actions">
+          <a class="btn ct-btn-hero-dark" href="<?= BASE_URL ?>?page=shop">
+            Khám phá ngay
+            <i class="fa-solid fa-arrow-right ms-2"></i>
+          </a>
+        </div>
       </div>
-      <h1 class="hero-banner__title">
-        KHÁM PHÁ XE ĐẠP<br>
-        <span class="ct-accent">CHÍNH HÃNG</span>
-      </h1>
-      <div class="hero-banner__actions">
-        <a class="btn ct-btn-hero-dark" href="<?= BASE_URL ?>?page=shop">
-          Khám phá ngay
-          <i class="fa-solid fa-arrow-right ms-2"></i>
-        </a>
-      </div>
+    </div>
   </div>
 </section>
 
@@ -92,11 +136,12 @@ $defaultBikeImage = BASE_URL . 'public/assets/images/default-bike.jpg';
         <a class="ct-cat-card" href="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>?page=shop&category_id=2">
           <div class="ct-cat-card__media">
             <img
-              src="https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?q=80&amp;w=800"
+              src="<?= BASE_URL ?>public/assets/images/categories/mountain-bike.jpg"
               alt="Xe đạp địa hình"
               loading="lazy"
+              style="object-fit: cover; width: 100%; height: 100%;"
             >
-            <div class="ct-cat-card__overlay" aria-hidden="true"></div>
+            <div class="ct-cat-card__overlay" aria-hidden="true" style="background: rgba(0, 0, 0, 0.4);"></div>
           </div>
           <div class="ct-cat-card__body">
             <h3 class="ct-cat-card__title">Xe địa hình</h3>
@@ -108,11 +153,12 @@ $defaultBikeImage = BASE_URL . 'public/assets/images/default-bike.jpg';
         <a class="ct-cat-card" href="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>?page=shop&category_id=1">
           <div class="ct-cat-card__media">
             <img
-              src="https://images.unsplash.com/photo-1485965120184-e220f721d03e?q=80&amp;w=800"
+              src="<?= BASE_URL ?>public/assets/images/categories/road-bike.jpg"
               alt="Xe đạp đua"
               loading="lazy"
+              style="object-fit: cover; width: 100%; height: 100%;"
             >
-            <div class="ct-cat-card__overlay" aria-hidden="true"></div>
+            <div class="ct-cat-card__overlay" aria-hidden="true" style="background: rgba(0, 0, 0, 0.4);"></div>
           </div>
           <div class="ct-cat-card__body">
             <h3 class="ct-cat-card__title">Xe đua</h3>
@@ -124,11 +170,12 @@ $defaultBikeImage = BASE_URL . 'public/assets/images/default-bike.jpg';
         <a class="ct-cat-card" href="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>?page=shop&category_id=3">
           <div class="ct-cat-card__media">
             <img
-              src="https://images.unsplash.com/photo-1511994298241-608e281149c0?q=80&amp;w=800"
+              src="<?= BASE_URL ?>public/assets/images/categories/urban-bike.jpg"
               alt="Xe đường phố"
               loading="lazy"
+              style="object-fit: cover; width: 100%; height: 100%;"
             >
-            <div class="ct-cat-card__overlay" aria-hidden="true"></div>
+            <div class="ct-cat-card__overlay" aria-hidden="true" style="background: rgba(0, 0, 0, 0.4);"></div>
           </div>
           <div class="ct-cat-card__body">
             <h3 class="ct-cat-card__title">Xe đường phố</h3>

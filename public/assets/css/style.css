@@ -240,9 +240,6 @@ img {
   width: 100%;
   height: 85vh;
   min-height: 640px;
-  background-image: url("https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?q=80&w=1920");
-  background-size: cover;
-  background-position: center;
   overflow: hidden;
 }
 

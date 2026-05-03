@@ -1,0 +1,270 @@
+/* CycleTrust Admin Panel Styles - High-End Dashboard Theme */
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --admin-bg-dark: #1A1A1A;
+    --admin-bg-light: #F4F7FE;
+    --admin-primary: #FF5C00;
+    --admin-text-light: #ffffff;
+    --admin-text-muted: #A3AED0;
+}
+
+body.admin-body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #f0f2f5 0%, #e6e9ef 100%);
+    display: flex;
+    min-height: 100vh;
+}
+
+.admin-sidebar {
+    width: 250px;
+    background-color: var(--admin-bg-dark);
+    color: var(--admin-text-light);
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    z-index: 10;
+}
+
+.admin-brand {
+    padding: 20px;
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--admin-primary);
+    text-decoration: none;
+    letter-spacing: 1px;
+}
+
+.admin-brand:hover {
+    color: #e64a19;
+}
+
+.admin-nav {
+    flex-grow: 1;
+    padding-top: 20px;
+}
+
+.admin-nav-link {
+    display: flex;
+    align-items: center;
+    padding: 15px 25px;
+    color: var(--admin-text-muted);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.admin-nav-link i {
+    margin-right: 15px;
+    font-size: 1.2rem;
+    width: 20px;
+    text-align: center;
+}
+
+.admin-nav-link:hover, .admin-nav-link.active {
+    color: var(--admin-text-light);
+    background-color: rgba(255, 87, 34, 0.1);
+    border-left: 4px solid var(--admin-primary);
+}
+
+.admin-nav-link:hover i, .admin-nav-link.active i {
+    color: var(--admin-primary);
+}
+
+.admin-main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow-x: hidden;
+}
+
+.admin-header {
+    background-color: transparent;
+    padding: 20px 30px 10px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: none !important;
+}
+
+.admin-user-info {
+    font-weight: 600;
+    color: #333;
+}
+
+.admin-container {
+    padding: 30px;
+    flex-grow: 1;
+}
+
+/* Dashboard KPI Cards and Admin Cards matching Horizon UI */
+.admin-card {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 15px 35px rgba(255, 92, 0, 0.15) !important;
+    padding: 24px;
+}
+
+.kpi-card {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 15px 35px rgba(255, 92, 0, 0.15);
+    display: flex;
+    align-items: center;
+    transition: transform 0.3s ease;
+}
+
+.kpi-card:hover {
+    transform: translateY(-5px);
+}
+
+.kpi-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.6rem;
+    margin-right: 20px;
+}
+
+.kpi-details h3 {
+    margin: 4px 0 0 0;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #2B3674;
+}
+
+.kpi-details p {
+    margin: 0;
+    color: var(--admin-text-muted);
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.kpi-details .change {
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-top: 4px;
+}
+.change.positive { color: #05CD99; }
+.change.negative { color: #EE5D50; }
+
+.admin-card-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #2B3674;
+    padding-bottom: 10px;
+}
+
+.table-admin th {
+    border-top: none;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    color: var(--admin-text-muted);
+}
+
+.table-admin td {
+    vertical-align: middle;
+}
+
+/* Sidebar Submenu Styles */
+.admin-nav-link {
+    justify-content: space-between;
+}
+
+.admin-nav-link span {
+    display: flex;
+    align-items: center;
+}
+
+.admin-nav-link.collapsed .toggle-icon {
+    transform: rotate(0deg);
+}
+
+.admin-nav-link:not(.collapsed) .toggle-icon {
+    transform: rotate(180deg);
+}
+
+.toggle-icon {
+    margin-right: 0 !important;
+    font-size: 1rem !important;
+    transition: transform 0.3s ease;
+}
+
+.admin-submenu {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.admin-submenu-link {
+    display: block;
+    padding: 12px 25px 12px 60px;
+    color: var(--admin-text-muted);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+    border-left: 4px solid transparent;
+}
+
+.admin-submenu-link:hover, .admin-submenu-link.active {
+    color: var(--admin-text-light);
+    background-color: rgba(255, 87, 34, 0.05);
+    border-left: 4px solid var(--admin-primary);
+}
+
+/* Widget Styles */
+.widget-list-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    transition: background 0.2s ease;
+}
+.widget-list-item:last-child {
+    border-bottom: none;
+}
+.widget-list-item:hover {
+    background: rgba(255, 92, 0, 0.02);
+    border-radius: 10px;
+    padding: 12px 10px;
+    margin: 0 -10px;
+}
+.bike-thumbnail {
+    width: 60px;
+    height: 60px;
+    border-radius: 10px;
+    object-fit: cover;
+    margin-right: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+.user-avatar-sm {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    vertical-align: middle;
+    margin-right: 5px;
+}
+.leader-avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    border: 2px solid #FF5C00;
+    padding: 2px;
+}
+.top-bike-glow {
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+}
