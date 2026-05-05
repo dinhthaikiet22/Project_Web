@@ -8,7 +8,7 @@ $conn = require __DIR__ . '/../config/db.php';
 $featuredBikes = [];
 try {
     $stmt = $conn->query(
-        "SELECT * FROM bikes WHERE status = 'available' ORDER BY created_at DESC LIMIT 8"
+        "SELECT b.* FROM bikes b INNER JOIN (SELECT title, MAX(id) AS max_id FROM bikes WHERE status = 'available' GROUP BY title) latest ON b.id = latest.max_id ORDER BY b.id DESC LIMIT 8"
     );
     $featuredBikes = $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
 } catch (PDOException $e) {
@@ -54,6 +54,11 @@ $defaultBikeImage = BASE_URL . 'public/assets/images/default-bike.jpg';
     .hero-content-box {
         max-width: 100%;
     }
+}
+.ct-bike-card__media {
+    aspect-ratio: 3/2;
+    background-color: #f8f9fa;
+    padding: 15px;
 }
 </style>
 <section class="hero-banner">
@@ -223,13 +228,13 @@ $defaultBikeImage = BASE_URL . 'public/assets/images/default-bike.jpg';
                     src="<?= BASE_URL ?>public/uploads/bikes/<?= rawurlencode($row['image_url']) ?>"
                     alt="<?= htmlspecialchars((string)($row['title'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
                     onerror="this.onerror=null;this.src='<?= BASE_URL ?>public/assets/images/categories/road-bike.jpg';"
-                    style="object-fit: cover; width: 100%; height: 100%;"
+                    style="object-fit: contain; width: 100%; height: 100%;"
                   >
                 <?php else: ?>
                   <img
                     src="<?= BASE_URL ?>public/assets/images/categories/road-bike.jpg"
                     alt="<?= htmlspecialchars((string)($row['title'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
-                    style="object-fit: cover; width: 100%; height: 100%;"
+                    style="object-fit: contain; width: 100%; height: 100%;"
                   >
                 <?php endif; ?>
               </div>

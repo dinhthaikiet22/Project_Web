@@ -1,7 +1,11 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/../../includes/admin/admin_header.php';
+// BẢO VỆ QUYỀN TRUY CẬP (Chặn truy cập POST trái phép)
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    header('Location: index.php?page=home');
+    exit;
+}
 
 /** @var PDO $conn */
 $conn = require_once __DIR__ . '/../../config/db.php';
@@ -59,6 +63,9 @@ try {
 } catch (PDOException $e) {
     $error = "Lỗi tải dữ liệu: " . $e->getMessage();
 }
+
+// INCLUDE HEADER SAU KHI XỬ LÝ LOGIC/REDIRECT
+require_once __DIR__ . '/../../includes/admin/admin_header.php';
 ?>
 
 <div class="d-flex align-items-center justify-content-between mb-4">
@@ -125,7 +132,7 @@ try {
                             <span class="badge bg-dark fw-normal"><i class="fa-solid fa-shield-halved me-1"></i> Toàn quyền Sàn</span>
                         </td>
                         <td class="text-end px-4">
-                            <?php if ($a['id'] != $_SESSION['user_id'] && $index !== 0): // K cho xoa chinh minh hoac admin dau tien (Founder) ?>
+                            <?php if ($a['id'] != $_SESSION['user_id']): // K cho xoa chinh minh ?>
                                 <form method="POST" action="?page=admin_admins" class="d-inline" onsubmit="return confirm('Hạ cấp người này xuống thành Khách hàng (User) bình thường? Họ sẽ mất quyền chui vào trang Admin này.');">
                                     <input type="hidden" name="action" value="revoke">
                                     <input type="hidden" name="user_id" value="<?= $a['id'] ?>">

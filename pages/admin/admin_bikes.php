@@ -105,7 +105,9 @@ try {
                         </td>
                     </tr>
                 <?php else: ?>
-                    <?php foreach ($bikes as $bike): 
+                    <?php 
+                    $stt = 1;
+                    foreach ($bikes as $bike): 
                         $sellerName = $bike['seller_name'] ?? 'Ẩn danh';
                         $statusRaw = $bike['status'] ?? '';
                         
@@ -122,7 +124,7 @@ try {
                         }
                     ?>
                         <tr>
-                            <td class="fw-semibold text-muted">#<?= $bike['id'] ?></td>
+                            <td class="fw-semibold text-muted">#<?= $stt++ ?></td>
                             <td>
                                 <div class="d-flex align-items-center gap-3">
                                     <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; min-width: 60px;">

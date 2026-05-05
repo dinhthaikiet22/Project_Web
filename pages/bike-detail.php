@@ -82,7 +82,8 @@ $postedLabel  = $createdAt !== '' ? date('d/m/Y', strtotime($createdAt)) : '—'
 
 $condLower = mb_strtolower($condition, 'UTF-8');
 $isNew     = str_contains($condLower, 'mới') || str_contains($condLower, 'new');
-$condBadge = $condition === '' ? 'bg-secondary' : ($isNew ? 'bg-success' : 'bg-warning text-dark');
+$condBadge = $condition === '' ? 'bg-secondary' : ($isNew ? 'bg-success text-white fw-bold' : 'text-dark fw-bold');
+$condBadgeStyle = $isNew ? 'background-color: #d1fae5 !important; color: #065f46 !important;' : 'background-color: #f1f2f6 !important; color: #1e272e !important;';
 $condText  = $condition !== '' ? $condition : 'Chưa cập nhật';
 
 $na = 'Chưa xác định';
@@ -90,7 +91,7 @@ $specFrameMaterial = trim((string)($bike['frame_material'] ?? ''));
 $specGroupset      = trim((string)($bike['groupset'] ?? ''));
 $specWheelSize     = trim((string)($bike['wheel_size'] ?? ''));
 $specWeight        = trim((string)($bike['weight'] ?? ''));
-$specBikeSize      = trim((string)($bike['bike_size'] ?? ''));
+$specBikeSize      = trim((string)($bike['size'] ?? ''));
 
 $similarBikes = [];
 if ($categoryId > 0) {
@@ -123,8 +124,9 @@ echo '<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.
 .bd-main-img {
     width: 100%;
     aspect-ratio: 4/3;
-    object-fit: cover;
-    border-radius: 14px;
+    object-fit: contain;
+    background-color: #f8f9fa;
+    border-radius: 8px;
     box-shadow: 0 4px 24px rgba(0,0,0,.12);
     display: block;
 }
@@ -155,18 +157,18 @@ echo '<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.
     align-items: center;
     justify-content: center;
     gap: 10px;
-    background: #212121;
-    color: #ff5722 !important;
+    background: #1a1a1a;
+    color: #ffffff !important;
     border: none;
-    border-radius: 12px;
-    font-weight: 800;
+    border-radius: 8px;
+    font-weight: 600;
     font-size: 1.05rem;
     padding: 14px 20px;
     text-decoration: none;
-    transition: background .2s, transform .15s;
+    transition: background 0.3s, transform 0.3s;
     width: 100%;
 }
-.bd-btn-call:hover { background: #000; transform: translateY(-2px); }
+.bd-btn-call:hover { background: #ff5722; transform: translateY(-2px); }
 .bd-thumb {
     width: 80px;
     height: 60px;
@@ -371,12 +373,19 @@ echo '<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.
                 $val = $spec['value'];
                 $isEmpty = ($val === '');
                 $displayVal = $isEmpty ? $na : htmlspecialchars($val, ENT_QUOTES, 'UTF-8');
+                $isSize = ($spec['label'] === 'Kích cỡ khung (Size)');
             ?>
               <div class="spec-item">
                 <div class="spec-item__icon"><?= $spec['icon'] ?></div>
                 <div class="spec-item__body">
                   <div class="spec-item__label"><?= htmlspecialchars($spec['label'], ENT_QUOTES, 'UTF-8') ?></div>
-                  <div class="spec-item__value<?= $isEmpty ? ' is-na' : '' ?>"><?= $displayVal ?></div>
+                  <?php if ($isSize): ?>
+                    <div class="spec-item__value">
+                        <?= !empty($bike['size']) ? htmlspecialchars((string)$bike['size']) : '<span style="color: #dc3545; font-style: italic;">Chưa xác định</span>'; ?>
+                    </div>
+                  <?php else: ?>
+                    <div class="spec-item__value<?= $isEmpty ? ' is-na' : '' ?>"><?= $displayVal ?></div>
+                  <?php endif; ?>
                 </div>
               </div>
             <?php endforeach; ?>
@@ -413,16 +422,16 @@ echo '<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.
           </div>
 
           <div class="d-flex flex-wrap gap-2 mb-4">
-            <span class="badge <?= htmlspecialchars($condBadge, ENT_QUOTES, 'UTF-8') ?> rounded-pill px-3 py-2">
+            <span class="badge <?= htmlspecialchars($condBadge, ENT_QUOTES, 'UTF-8') ?> rounded-pill px-3 py-2" style="<?= $condBadgeStyle ?>">
               <?= htmlspecialchars($condText, ENT_QUOTES, 'UTF-8') ?>
             </span>
             <?php if ($brand !== ''): ?>
-              <span class="badge bg-dark rounded-pill px-3 py-2">
+              <span class="badge rounded-pill px-3 py-2 fw-bold" style="background-color: #f1f2f6; color: #1e272e;">
                 <?= htmlspecialchars($brand, ENT_QUOTES, 'UTF-8') ?>
               </span>
             <?php endif; ?>
             <?php if ($categoryName !== ''): ?>
-              <span class="badge bg-light text-dark rounded-pill px-3 py-2">
+              <span class="badge rounded-pill px-3 py-2 fw-bold" style="background-color: #f1f2f6; color: #1e272e;">
                 <?= htmlspecialchars($categoryName, ENT_QUOTES, 'UTF-8') ?>
               </span>
             <?php endif; ?>
@@ -471,21 +480,20 @@ echo '<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.
             ?>
               <a
                 href="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>?page=checkout&bike_id=<?= $id ?>"
-                class="btn w-100 py-3 rounded-3 mt-3 shadow-sm"
-                style="background: #FF5722; color: #fff; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 10px; transition: background .2s, transform .2s;"
+                class="btn btn-buy-now mt-3 shadow-sm"
                 onmouseover="this.style.background='#e64a19';this.style.transform='translateY(-2px)';"
                 onmouseout="this.style.background='#FF5722';this.style.transform='none';"
               >
-                <i class="fa-solid fa-shield-halved"></i>
-                MUA NGAY (THANH TOÁN AN TOÀN)
+                <div><i class="fas fa-shield-alt"></i> MUA NGAY</div>
+                <span style="font-size: 0.8em; font-weight: bold; display: block; margin-top: 2px;">(THANH TOÁN AN TOÀN)</span>
               </a>
 
               <a
                 href="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>?page=chat_room&receiver_id=<?= $sellerId ?><?= $id > 0 ? '&bike_id='.$id : '' ?>"
-                class="btn w-100 py-3 rounded-3 mt-3"
-                style="border: 2px solid #212121; color: #212121; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 10px; transition: background .2s, color .2s;"
-                onmouseover="this.style.background='#212121';this.style.color='#fff';"
-                onmouseout="this.style.background='transparent';this.style.color='#212121';"
+                class="btn w-100 py-3 mt-3"
+                style="background: #1a1a1a; color: #ffffff !important; font-weight: 600; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 10px; transition: background 0.3s, transform 0.3s;"
+                onmouseover="this.style.background='#ff5722';this.style.transform='translateY(-2px)';"
+                onmouseout="this.style.background='#1a1a1a';this.style.transform='none';"
               >
                 <i class="fa-regular fa-comment-dots"></i>
                 CHAT VỚI NGƯỜI BÁN
@@ -493,10 +501,10 @@ echo '<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.
             <?php elseif ($currentUserId === 0): ?>
                <a
                 href="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>?page=login"
-                class="btn w-100 py-3 rounded-3 mt-3"
-                style="border: 2px solid #ff5722; color: #ff5722; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 10px; transition: background .2s, color .2s;"
-                onmouseover="this.style.background='#ff5722';this.style.color='#fff';"
-                onmouseout="this.style.background='transparent';this.style.color='#ff5722';"
+                class="btn w-100 py-3 mt-3"
+                style="border: 2px solid #1a1a1a; color: #1a1a1a; font-weight: 600; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 10px; transition: background 0.3s, color 0.3s, transform 0.3s;"
+                onmouseover="this.style.background='#1a1a1a';this.style.color='#ffffff';"
+                onmouseout="this.style.background='transparent';this.style.color='#1a1a1a';"
               >
                 <i class="fa-regular fa-comment-dots"></i>
                 ĐĂNG NHẬP ĐỂ CHAT

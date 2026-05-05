@@ -10,7 +10,7 @@ $currentPage = isset($_GET['p'])           ? max(1, (int)$_GET['p'])            
 $categoryId  = isset($_GET['category_id']) ? (int)$_GET['category_id']          : 0;
 $priceRange  = isset($_GET['price_range']) ? trim((string)$_GET['price_range'])  : '';
 $brandFilter = isset($_GET['brand'])       ? trim((string)$_GET['brand'])        : '';
-$sizeFilter  = isset($_GET['size'])        ? trim((string)$_GET['size'])         : '';
+$size        = isset($_GET['size']) && trim((string)$_GET['size']) !== '' ? trim((string)$_GET['size']) : '';
 $keyword     = isset($_GET['q'])           ? trim((string)$_GET['q'])            : '';
 
 // ── 2. Sidebar data ───────────────────────────────────────────────────────────
@@ -45,11 +45,16 @@ try {
 
 $baseSql = "SELECT b.*, c.name AS cat_name
             FROM bikes b
+            INNER JOIN (
+                SELECT title, MAX(id) AS max_id
+                FROM bikes
+                WHERE status = 'available'
+                  AND image_url IS NOT NULL
+                  AND image_url != ''
+                GROUP BY title
+            ) latest ON b.id = latest.max_id
             LEFT JOIN categories c ON b.category_id = c.id
-            WHERE 1=1
-              AND b.status = 'available'
-              AND b.image_url IS NOT NULL
-              AND b.image_url != ''";
+            WHERE 1=1";
 
 $filterSql = '';
 $bindMap   = [];   // [':placeholder' => ['value' => mixed, 'type' => PDO::PARAM_*]]
@@ -75,9 +80,9 @@ if ($brandFilter !== '') {
 }
 
 // -- Kích cỡ -----------------------------------------------------------------
-if ($sizeFilter !== '') {
-    $filterSql .= ' AND b.bike_size = :bike_size';
-    $bindMap[':bike_size'] = ['value' => $sizeFilter, 'type' => PDO::PARAM_STR];
+if ($size !== '') {
+    $filterSql .= ' AND b.size = :size';
+    $bindMap[':size'] = ['value' => $size, 'type' => PDO::PARAM_STR];
 }
 
 // -- Khoảng giá: dùng literal số (không phải user input) — an toàn SQL -------
@@ -105,11 +110,16 @@ $totalPages   = 1;
 try {
     $countSql = "SELECT COUNT(*)
                  FROM bikes b
+                 INNER JOIN (
+                     SELECT title, MAX(id) AS max_id
+                     FROM bikes
+                     WHERE status = 'available'
+                       AND image_url IS NOT NULL
+                       AND image_url != ''
+                     GROUP BY title
+                 ) latest ON b.id = latest.max_id
                  LEFT JOIN categories c ON b.category_id = c.id
-                 WHERE 1=1
-                   AND b.status = 'available'
-                   AND b.image_url IS NOT NULL
-                   AND b.image_url != ''" . $filterSql;
+                 WHERE 1=1" . $filterSql;
 
     $countStmt = $conn->prepare($countSql);
     foreach ($bindMap as $ph => $meta) {
@@ -125,7 +135,7 @@ try {
     $offset = ($currentPage - 1) * $limit;
 
     // ── 5. Lấy danh sách xe trang hiện tại ───────────────────────────────────
-    $listSql  = $baseSql . $filterSql . ' ORDER BY b.created_at DESC LIMIT :lim OFFSET :off';
+    $listSql  = $baseSql . $filterSql . ' ORDER BY b.id DESC LIMIT :lim OFFSET :off';
     $listStmt = $conn->prepare($listSql);
 
     foreach ($bindMap as $ph => $meta) {
@@ -295,7 +305,14 @@ $sizes = ['S', 'M', 'L', 'XL'];
     transition: box-shadow .25s, transform .2s;
 }
 .shop-bike-card:hover { box-shadow: 0 8px 28px rgba(0,0,0,.11); transform: translateY(-3px); }
-.shop-bike-card__img { width: 100%; height: 200px; object-fit: cover; display: block; }
+.shop-bike-card__img-wrap {
+    display: block;
+    aspect-ratio: 4/3;
+    overflow: hidden;
+    background-color: #f8f9fa;
+    padding: 10px;
+}
+.shop-bike-card__img { width: 100%; height: 100%; object-fit: contain; display: block; }
 .shop-bike-card__body { padding: 16px; flex: 1; display: flex; flex-direction: column; }
 .shop-bike-card__title {
     font-size: .95rem;
@@ -353,7 +370,7 @@ $sizes = ['S', 'M', 'L', 'XL'];
         <h1 class="h3 fw-bold mb-1">Cửa hàng xe đạp</h1>
         <div class="sf-result-count">
           <?php
-          $isFiltered = $keyword !== '' || $priceRange !== '' || $brandFilter !== '' || $sizeFilter !== '' || $categoryId > 0;
+          $isFiltered = $keyword !== '' || $priceRange !== '' || $brandFilter !== '' || $size !== '' || $categoryId > 0;
           if ($isFiltered): ?>
             <span class="me-1">Đang lọc:</span>
             <?php if ($keyword !== ''): ?>
@@ -368,8 +385,8 @@ $sizes = ['S', 'M', 'L', 'XL'];
             <?php if ($brandFilter !== ''): ?>
               <span class="sf-active-badge me-1"><i class="fa-solid fa-bicycle"></i><?= htmlspecialchars($brandFilter, ENT_QUOTES, 'UTF-8') ?></span>
             <?php endif; ?>
-            <?php if ($sizeFilter !== ''): ?>
-              <span class="sf-active-badge me-1">Size <?= htmlspecialchars($sizeFilter, ENT_QUOTES, 'UTF-8') ?></span>
+            <?php if ($size !== ''): ?>
+              <span class="sf-active-badge me-1">Size <?= htmlspecialchars($size, ENT_QUOTES, 'UTF-8') ?></span>
             <?php endif; ?>
           <?php else: ?>
             Tất cả xe đạp
@@ -462,10 +479,10 @@ $sizes = ['S', 'M', 'L', 'XL'];
             <div class="sf-section">
               <div class="sf-section__label">Kích cỡ khung (Size)</div>
               <div>
-                <input type="radio" class="sf-pill" name="size" id="sz_all" value="" <?= $sizeFilter === '' ? 'checked' : '' ?>>
+                <input type="radio" class="sf-pill" name="size" id="sz_all" value="" <?= $size === '' ? 'checked' : '' ?>>
                 <label for="sz_all">Tất cả</label>
                 <?php foreach ($sizes as $sz): ?>
-                  <input type="radio" class="sf-pill" name="size" id="sz_<?= $sz ?>" value="<?= $sz ?>" <?= $sizeFilter === $sz ? 'checked' : '' ?>>
+                  <input type="radio" class="sf-pill" name="size" id="sz_<?= $sz ?>" value="<?= $sz ?>" <?= $size === $sz ? 'checked' : '' ?>>
                   <label for="sz_<?= $sz ?>"><?= $sz ?></label>
                 <?php endforeach; ?>
               </div>
@@ -476,7 +493,7 @@ $sizes = ['S', 'M', 'L', 'XL'];
           <button type="submit" class="sf-btn-submit mt-3">
             <i class="fa-solid fa-filter me-2"></i>Lọc ngay
           </button>
-          <a href="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>?page=shop" class="sf-btn-reset">
+          <a href="index.php?page=shop" class="sf-btn-reset">
             <i class="fa-solid fa-rotate-left me-1"></i>Xóa bộ lọc
           </a>
         </form>
@@ -502,6 +519,9 @@ $sizes = ['S', 'M', 'L', 'XL'];
               $rBrand     = htmlspecialchars(trim((string)($row['brand'] ?? '')), ENT_QUOTES, 'UTF-8');
               $rLoc       = htmlspecialchars(trim((string)($row['location'] ?? '')), ENT_QUOTES, 'UTF-8');
               $rCond      = htmlspecialchars(trim((string)($row['condition_status'] ?? '')), ENT_QUOTES, 'UTF-8');
+              $rCondLower = mb_strtolower($rCond, 'UTF-8');
+              $rIsNew     = str_contains($rCondLower, 'mới') || str_contains($rCondLower, 'new');
+              $rCondStyle = $rIsNew ? 'background-color: #d1fae5; color: #065f46;' : 'background-color: #f1f2f6; color: #1e272e;';
               $rCatName   = htmlspecialchars(trim((string)($row['cat_name'] ?? '')), ENT_QUOTES, 'UTF-8');
               $rPrice     = isset($row['price']) ? (float)$row['price'] : 0.0;
               $rId        = (int)($row['id'] ?? 0);
@@ -509,7 +529,7 @@ $sizes = ['S', 'M', 'L', 'XL'];
             ?>
               <div class="col-12 col-sm-6 col-xl-4">
                 <article class="shop-bike-card">
-                  <a href="<?= $detailUrl ?>" tabindex="-1" aria-hidden="true">
+                  <a href="<?= $detailUrl ?>" tabindex="-1" aria-hidden="true" class="shop-bike-card__img-wrap">
                     <?php if (!empty($row['image_url'])): ?>
                       <img
                         class="shop-bike-card__img"
@@ -517,7 +537,6 @@ $sizes = ['S', 'M', 'L', 'XL'];
                         alt="<?= $rTitle ?>"
                         loading="lazy"
                         onerror="this.onerror=null;this.src='<?= BASE_URL ?>public/assets/images/categories/road-bike.jpg';"
-                        style="object-fit: cover;"
                       >
                     <?php else: ?>
                       <img
@@ -525,7 +544,6 @@ $sizes = ['S', 'M', 'L', 'XL'];
                         src="<?= BASE_URL ?>public/assets/images/categories/road-bike.jpg"
                         alt="<?= $rTitle ?>"
                         loading="lazy"
-                        style="object-fit: cover;"
                       >
                     <?php endif; ?>
                   </a>
@@ -533,15 +551,15 @@ $sizes = ['S', 'M', 'L', 'XL'];
                     <div class="shop-bike-card__title"><?= $rTitle ?></div>
                     <div class="d-flex flex-wrap gap-1 mb-2">
                       <?php if ($rBrand !== ''): ?>
-                        <span class="badge bg-light text-dark" style="font-size:.72rem;">
+                        <span class="badge fw-bold" style="background-color:#f1f2f6; color:#1e272e; font-size:.72rem;">
                           <i class="fa-solid fa-tag me-1"></i><?= $rBrand ?>
                         </span>
                       <?php endif; ?>
                       <?php if ($rCatName !== ''): ?>
-                        <span class="badge bg-light text-dark" style="font-size:.72rem;"><?= $rCatName ?></span>
+                        <span class="badge fw-bold" style="background-color:#f1f2f6; color:#1e272e; font-size:.72rem;"><?= $rCatName ?></span>
                       <?php endif; ?>
                       <?php if ($rCond !== ''): ?>
-                        <span class="badge bg-light text-dark" style="font-size:.72rem;"><?= $rCond ?></span>
+                        <span class="badge fw-bold" style="<?= $rCondStyle ?> font-size:.72rem;"><?= $rCond ?></span>
                       <?php endif; ?>
                     </div>
                     <div class="shop-bike-card__price mb-2"><?= number_format($rPrice, 0, ',', '.') ?>đ</div>
@@ -590,9 +608,13 @@ $sizes = ['S', 'M', 'L', 'XL'];
           <div class="sf-empty">
             <div style="font-size:3.5rem; margin-bottom:16px;">🚲</div>
             <h2 class="h5 fw-bold mb-2">
-              <?= $isFiltered
-                ? 'Rất tiếc, không có chiếc xe nào phù hợp với bộ lọc của bạn.'
-                : 'Chưa có tin đăng nào.' ?>
+              <?php if ($isFiltered): ?>
+                <?= $size !== '' 
+                    ? 'Không tìm thấy xe size ' . htmlspecialchars($size, ENT_QUOTES, 'UTF-8') 
+                    : 'Rất tiếc, không có chiếc xe nào phù hợp với bộ lọc của bạn.' ?>
+              <?php else: ?>
+                Chưa có tin đăng nào.
+              <?php endif; ?>
             </h2>
             <p class="text-muted mb-4">
               <?= $isFiltered
@@ -601,7 +623,7 @@ $sizes = ['S', 'M', 'L', 'XL'];
             </p>
             <?php if ($isFiltered): ?>
               <a
-                href="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>?page=shop"
+                href="index.php?page=shop"
                 class="btn"
                 style="background:#ff5722;color:#fff;border:none;border-radius:10px;padding:11px 28px;font-weight:800;"
               >
