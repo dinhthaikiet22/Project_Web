@@ -41,9 +41,9 @@ if (!$user) {
 // 3. THỐNG KÊ: Số xe đang bán & đã giao dịch thành công
 // ════════════════════════════════════════════════════
 
-// Số xe đang bán (status = 'available')
+// Số xe đang bán (status = 'active')
 $stmtSelling = $conn->prepare(
-    "SELECT COUNT(*) AS total FROM bikes WHERE user_id = :uid AND status = 'available'"
+    "SELECT COUNT(*) AS total FROM bikes WHERE user_id = :uid AND status = 'active'"
 );
 $stmtSelling->execute([':uid' => $userId]);
 $countSelling = (int)($stmtSelling->fetchColumn() ?: 0);

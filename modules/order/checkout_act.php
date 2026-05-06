@@ -45,7 +45,7 @@ try {
     $stmtBike->execute([$bikeId]);
     $bike = $stmtBike->fetch(PDO::FETCH_ASSOC);
 
-    if (!$bike || $bike['status'] !== 'available') {
+    if (!$bike || $bike['status'] !== 'active') {
         $conn->rollBack();
         echo json_encode(['status' => 'error', 'message' => 'Chiếc xe này không còn khả dụng để mua.']);
         exit;

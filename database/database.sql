@@ -1,294 +1,381 @@
--- phpMyAdmin SQL Dump
--- version 5.2.1
--- https://www.phpmyadmin.net/
+-- MariaDB dump 10.19  Distrib 10.4.32-MariaDB, for Win64 (AMD64)
 --
--- Host: 127.0.0.1
--- Generation Time: Apr 01, 2026 at 07:03 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
-
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-START TRANSACTION;
-SET time_zone = "+00:00";
-
+-- Host: localhost    Database: cycle_trust
+-- ------------------------------------------------------
+-- Server version	10.4.32-MariaDB
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Database: `cycle_trust`
+-- Table structure for table `banners`
 --
 
--- --------------------------------------------------------
-
---
--- Table structure for table `bikes`
---
-
-CREATE TABLE `bikes` (
-  `id` int(11) NOT NULL,
-  `user_id` int(11) DEFAULT NULL,
-  `category_id` int(11) DEFAULT NULL,
+DROP TABLE IF EXISTS `banners`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `banners` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
-  `price` decimal(15,2) NOT NULL,
-  `brand` varchar(100) DEFAULT NULL,
-  `condition_status` varchar(50) DEFAULT NULL,
-  `description` text DEFAULT NULL,
-  `image_url` varchar(255) DEFAULT NULL,
-  `location` varchar(100) DEFAULT NULL,
-  `status` enum('available','sold','hidden') DEFAULT 'available',
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `bikes`
---
-
-INSERT INTO `bikes` (`id`, `user_id`, `category_id`, `title`, `price`, `brand`, `condition_status`, `description`, `image_url`, `location`, `status`, `created_at`) VALUES
-(2, 1, 1, 'Giant TCR Advanced Pro 1 Disc', 75000000.00, 'Giant', 'Đã sử dụng', 'Xe full carbon, group Ultegra, còn mới 95%. Lên dốc cực nhẹ.', NULL, 'TP.HCM', 'available', '2026-03-31 16:26:07'),
-(3, 1, 2, 'Trek Marlin 7 Gen 2', 18500000.00, 'Trek', 'Mới', 'Xe đạp địa hình leo núi bền bỉ, phuộc RockShox êm ái, thắng đĩa thủy lực.', NULL, 'Hà Nội', 'available', '2026-03-31 16:26:07'),
-(4, 1, 1, 'Specialized Tarmac SL7 Expert', 120000000.00, 'Specialized', 'Đã sử dụng', 'Hàng lướt, khung carbon FACT 10r siêu nhẹ, xé gió cực mượt.', NULL, 'Đà Nẵng', 'available', '2026-03-31 16:26:07'),
-(5, 1, 3, 'Asama TRK FL2601', 3500000.00, 'Asama', 'Mới', 'Xe đạp cào cào thành phố, có baga tiện lợi đi chợ, đi học.', NULL, 'Hải Phòng', 'available', '2026-03-31 16:26:07'),
-(6, 1, 1, 'Cannondale CAAD13 105', 45000000.00, 'Cannondale', 'Đã sử dụng', 'Vua nhôm, nhẹ ngang carbon, đạp cực bốc. Khung không vết xước.', NULL, 'TP.HCM', 'available', '2026-03-31 16:26:07'),
-(7, 1, 2, 'Giant Roam 2 Disc', 14000000.00, 'Giant', 'Đã sử dụng', 'Xe touring lai MTB, đi xa thoải mái, bánh 700c lướt nhanh.', NULL, 'Hà Nội', 'available', '2026-03-31 16:26:07'),
-(8, 1, 1, 'Pinarello Dogma F12', 250000000.00, 'Pinarello', 'Đã sử dụng', 'Siêu xe đạp đua chuyên nghiệp, groupset Dura-Ace Di2 điện tử.', NULL, 'TP.HCM', 'sold', '2026-03-31 16:26:07'),
-(9, 1, 3, 'Trinx Free 2.0', 5500000.00, 'Trinx', 'Mới', 'Xe đạp phố giá rẻ, phù hợp sinh viên đi dạo, đi làm gần.', NULL, 'Đà Nẵng', 'available', '2026-03-31 16:26:07'),
-(10, 1, 2, 'GT Avalanche Comp', 16000000.00, 'GT', 'Đã sử dụng', 'Khung nhôm Triple Triangle huyền thoại, chịu lực cực tốt.', NULL, 'Cần Thơ', 'available', '2026-03-31 16:26:07'),
-(11, 1, 1, 'Cervelo S5', 180000000.00, 'Cervelo', 'Đã sử dụng', 'Xe Aero xé gió cực tốt, bánh mâm carbon 50mm.', NULL, 'Hà Nội', 'available', '2026-03-31 16:26:07'),
-(12, 1, 1, 'Giant TCR Advanced Pro 1', 75000000.00, 'Giant', 'Đã sử dụng', 'Xe full carbon, group Ultegra. Lên dốc cực nhẹ.', 'https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=800&q=80', 'TP.HCM', 'available', '2026-03-31 16:28:16'),
-(13, 1, 2, 'Trek Marlin 7 Gen 2', 18500000.00, 'Trek', 'Mới', 'Xe đạp địa hình leo núi bền bỉ, phuộc êm ái.', 'https://images.unsplash.com/photo-1534723452862-4c874018d66d?auto=format&fit=crop&w=800&q=80', 'Hà Nội', 'available', '2026-03-31 16:28:16'),
-(14, 1, 1, 'Specialized Tarmac SL7', 120000000.00, 'Specialized', 'Đã sử dụng', 'Hàng lướt, khung carbon FACT 10r siêu nhẹ.', 'https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?auto=format&fit=crop&w=800&q=80', 'Đà Nẵng', 'available', '2026-03-31 16:28:16'),
-(15, 1, 3, 'Asama TRK City Bike', 3500000.00, 'Asama', 'Mới', 'Xe đạp cào cào thành phố, có baga tiện lợi.', 'https://images.unsplash.com/photo-1507035895480-2b3156c31fc8?auto=format&fit=crop&w=800&q=80', 'Hải Phòng', 'available', '2026-03-31 16:28:16'),
-(16, 1, 1, 'Cannondale CAAD13', 45000000.00, 'Cannondale', 'Đã sử dụng', 'Vua nhôm, nhẹ ngang carbon, đạp cực bốc.', 'https://images.unsplash.com/photo-1511994298241-608e28f14fde?auto=format&fit=crop&w=800&q=80', 'TP.HCM', 'available', '2026-03-31 16:28:16'),
-(17, 1, 2, 'Giant Roam Touring', 14000000.00, 'Giant', 'Đã sử dụng', 'Xe touring lai MTB, đi xa thoải mái.', 'https://images.unsplash.com/photo-1528629297340-d1d466945dc5?auto=format&fit=crop&w=800&q=80', 'Hà Nội', 'available', '2026-03-31 16:28:16'),
-(18, 1, 1, 'Pinarello Dogma F12', 250000000.00, 'Pinarello', 'Đã sử dụng', 'Siêu xe đạp đua chuyên nghiệp.', 'https://images.unsplash.com/photo-1576435728678-68dd0f08ce13?auto=format&fit=crop&w=800&q=80', 'TP.HCM', 'sold', '2026-03-31 16:28:16'),
-(19, 1, 2, 'GT Avalanche Comp MTB', 16000000.00, 'GT', 'Mới', 'Khung nhôm Triple Triangle huyền thoại.', 'https://images.unsplash.com/photo-1544188237-700810db69bb?auto=format&fit=crop&w=800&q=80', 'Cần Thơ', 'available', '2026-03-31 16:28:16'),
-(50, 1, 1, 'Pinarello Dogma F12 (Like New)', 210000000.00, 'Pinarello', 'Mới 99%', 'Siêu xe đua hàng đầu thế giới. Khung carbon cao cấp, group Dura-Ace Di2 12 speed. Không xước một vết nhỏ.', 'https://images.unsplash.com/photo-1511994298241-608e281149c0?q=80&w=800', 'Quận 2, TP.HCM', 'available', '2026-04-01 04:23:52'),
-(51, 1, 2, 'Giant Talon 2 2023', 12500000.00, 'Giant', 'Mới', 'Xe đạp địa hình quốc dân cho anh em mới chơi. Phuộc nhún mượt, phanh đĩa thủy lực an toàn.', 'https://images.unsplash.com/photo-1507035895480-2b3156c31fc8?q=80&w=800', 'Cầu Giấy, Hà Nội', 'available', '2026-04-01 04:23:52'),
-(52, 1, 3, 'Asama TRK City Bike', 3500000.00, 'Asama', 'Đã sử dụng', 'Xe đạp cào cào thành phố, có baga tiện lợi đi chợ, chở đồ nhẹ nhàng. Phuộc cứng, dễ bảo dưỡng.', 'https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?q=80&w=800', 'Hải Phòng', 'available', '2026-04-01 04:23:52'),
-(53, 1, 1, 'Specialized Tarmac SL7 Expert', 145000000.00, 'Specialized', 'Mới 95%', 'Hàng lướt, khung carbon FACT 10r siêu nhẹ, xé gió cực tốt. Bánh Roval carbon mâm cao.', 'https://images.unsplash.com/photo-1485965120184-e220f721d03e?q=80&w=800', 'Đà Nẵng', 'available', '2026-04-01 04:23:52'),
-(54, 1, 2, 'Trek Marlin 7 Gen 2', 18500000.00, 'Trek', 'Mới', 'Xe đạp địa hình leo núi bền bỉ. Phuộc RockShox êm ái, bộ truyền động Shimano Deore 1x10.', 'https://images.unsplash.com/photo-1576435728678-68ce0f622473?q=80&w=800', 'Quận 1, TP.HCM', 'available', '2026-04-01 04:23:52'),
-(55, 1, 3, 'Trinx Free 2.0', 5500000.00, 'Trinx', 'Đã sử dụng', 'Xe đạp phố giá rẻ cho sinh viên. Group Shimano Tourney 21 tốc độ, đi học đi làm cực tiện.', 'https://images.unsplash.com/photo-1511994298241-608e281149c0?q=80&w=800', 'Thủ Đức, TP.HCM', 'available', '2026-04-01 04:23:52'),
-(56, 1, 1, 'Cannondale CAAD13 105', 45000000.00, 'Cannondale', 'Đã sử dụng', 'Vua nhôm, nhẹ ngang carbon, đạp cực bốc. Khung không vết móp, group Shimano 105 r7000.', 'https://images.unsplash.com/photo-1507035895480-2b3156c31fc8?q=80&w=800', 'Thanh Xuân, Hà Nội', 'available', '2026-04-01 04:23:52'),
-(57, 1, 2, 'GT Avalanche Comp', 16000000.00, 'GT', 'Mới 99%', 'Khung nhôm Triple Triangle huyền thoại, chịu lực cực tốt. Phuộc Suntour XCM 100mm.', 'https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?q=80&w=800', 'Cần Thơ', 'available', '2026-04-01 04:23:52'),
-(58, 1, 3, 'Giant Roam 2 Disc', 14000000.00, 'Giant', 'Mới', 'Xe touring lai MTB, đi xa thoải mái, bánh 700c lướt nhanh nhưng vẫn có phuộc nhún êm ái.', 'https://images.unsplash.com/photo-1485965120184-e220f721d03e?q=80&w=800', 'Bình Thạnh, TP.HCM', 'available', '2026-04-01 04:23:52'),
-(59, 1, 1, 'Cervelo S5 (Khung sườn)', 110000000.00, 'Cervelo', 'Mới', 'Chỉ bán khung sườn (Frame kit) Cervelo S5 đời mới nhất. Kèm ghi đông potang carbon nguyên khối.', 'https://images.unsplash.com/photo-1576435728678-68ce0f622473?q=80&w=800', 'Quận 7, TP.HCM', 'available', '2026-04-01 04:23:52'),
-(60, 1, 2, 'Santa Cruz Hightower', 95000000.00, 'Santa Cruz', 'Đã sử dụng', 'Quái vật Enduro, leo dốc tốt, đổ đèo bao phê. Phuộc trước sau hành trình dài, bảo dưỡng mỡ bò đầy đủ.', 'https://images.unsplash.com/photo-1511994298241-608e281149c0?q=80&w=800', 'Đà Lạt', 'available', '2026-04-01 04:23:52'),
-(61, 1, 3, 'Thống Nhất Nữ 24 inch', 2500000.00, 'Thống Nhất', 'Đã sử dụng', 'Xe đạp nữ màu hồng phấn, giỏ xe rộng, yên nệm lò xo cực êm. Phù hợp các mẹ đi chợ.', 'https://images.unsplash.com/photo-1507035895480-2b3156c31fc8?q=80&w=800', 'Gò Vấp, TP.HCM', 'available', '2026-04-01 04:23:52'),
-(62, 1, 1, 'Merida Scultura 400', 25000000.00, 'Merida', 'Mới 95%', 'Xe road khung nhôm siêu nhẹ, phuộc carbon. Nước sơn zin còn bóng loáng, líp sên chưa mòn.', 'https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?q=80&w=800', 'Nha Trang', 'available', '2026-04-01 04:23:52'),
-(63, 1, 2, 'Cube Aim Pro', 14500000.00, 'Cube', 'Mới', 'Hàng nhập Đức, thiết kế khung giấu dây tinh tế. Phanh đĩa Tektro bóp cực ăn.', 'https://images.unsplash.com/photo-1485965120184-e220f721d03e?q=80&w=800', 'Quận 3, TP.HCM', 'available', '2026-04-01 04:23:52'),
-(64, 1, 3, 'Brompton C Line (Xe gấp)', 48000000.00, 'Brompton', 'Mới 99%', 'Xe gấp gọn chuẩn Anh Quốc, bỏ cốp ô tô hoặc mang lên tàu điện ngầm thoải mái. Bản 6 líp.', 'https://images.unsplash.com/photo-1576435728678-68ce0f622473?q=80&w=800', 'Hoàn Kiếm, Hà Nội', 'available', '2026-04-01 04:23:52');
-
--- --------------------------------------------------------
+  `image_url` text NOT NULL,
+  `link_url` text DEFAULT NULL,
+  `status` enum('active','disabled') DEFAULT 'active',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `bike_images`
 --
 
+DROP TABLE IF EXISTS `bike_images`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `bike_images` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `bike_id` int(11) NOT NULL,
   `image_url` varchar(255) NOT NULL,
   `is_primary` tinyint(1) DEFAULT 0,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `bike_id` (`bike_id`),
+  CONSTRAINT `bike_images_ibfk_1` FOREIGN KEY (`bike_id`) REFERENCES `bikes` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
--- --------------------------------------------------------
+--
+-- Table structure for table `bikes`
+--
+
+DROP TABLE IF EXISTS `bikes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `bikes` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
+  `category_id` int(11) DEFAULT NULL,
+  `title` varchar(255) NOT NULL,
+  `price` decimal(15,2) NOT NULL,
+  `brand` varchar(100) DEFAULT NULL,
+  `frame_material` varchar(100) DEFAULT 'Nhôm',
+  `groupset` varchar(100) DEFAULT 'Shimano',
+  `wheel_size` varchar(50) DEFAULT '700c',
+  `weight` varchar(20) DEFAULT '10kg',
+  `size` varchar(10) DEFAULT 'M',
+  `condition_status` enum('new','used') DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `image_url` varchar(255) DEFAULT NULL,
+  `location` varchar(100) DEFAULT NULL,
+  `status` enum('pending','active','sold','hidden') NOT NULL DEFAULT 'pending',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `bike_size` varchar(30) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  KEY `category_id` (`category_id`),
+  CONSTRAINT `bikes_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `bikes_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `brands`
+--
+
+DROP TABLE IF EXISTS `brands`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `brands` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `slug` varchar(255) DEFAULT NULL,
+  `origin` varchar(100) DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `logo` varchar(255) DEFAULT NULL,
+  `image_url` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=100 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `categories`
 --
 
+DROP TABLE IF EXISTS `categories`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `categories` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
-  `slug` varchar(50) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `slug` varchar(50) NOT NULL,
+  `description` text DEFAULT NULL,
+  `image_url` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=100 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `categories`
+-- Table structure for table `coupons`
 --
 
-INSERT INTO `categories` (`id`, `name`, `slug`) VALUES
-(1, 'Road Bike', 'road'),
-(2, 'Mountain Bike', 'mtb'),
-(3, 'City Bike', 'city');
-
--- --------------------------------------------------------
+DROP TABLE IF EXISTS `coupons`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `coupons` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `code` varchar(50) NOT NULL,
+  `discount_amount` decimal(15,2) NOT NULL,
+  `min_spend` decimal(15,2) DEFAULT 0.00,
+  `expiry_date` date NOT NULL,
+  `status` enum('active','disabled') DEFAULT 'active',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `code` (`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `favorites`
 --
 
+DROP TABLE IF EXISTS `favorites`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `favorites` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
   `bike_id` int(11) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `user_bike` (`user_id`,`bike_id`),
+  KEY `bike_id` (`bike_id`),
+  CONSTRAINT `favorites_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `favorites_ibfk_2` FOREIGN KEY (`bike_id`) REFERENCES `bikes` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `reviews`
+-- Table structure for table `messages`
 --
 
-CREATE TABLE `reviews` (
-  `id` int(11) NOT NULL,
-  `reviewer_id` int(11) NOT NULL,
-  `reviewed_user_id` int(11) NOT NULL,
-  `rating` int(11) NOT NULL CHECK (`rating` >= 1 and `rating` <= 5),
-  `comment` text DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+DROP TABLE IF EXISTS `messages`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `messages` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `sender_id` int(11) NOT NULL,
+  `receiver_id` int(11) NOT NULL,
+  `bike_id` int(11) DEFAULT NULL,
+  `content` text NOT NULL,
+  `is_read` tinyint(1) DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `sender_id` (`sender_id`),
+  KEY `receiver_id` (`receiver_id`),
+  KEY `bike_id` (`bike_id`),
+  CONSTRAINT `messages_ibfk_1` FOREIGN KEY (`sender_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `messages_ibfk_2` FOREIGN KEY (`receiver_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `messages_ibfk_3` FOREIGN KEY (`bike_id`) REFERENCES `bikes` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
--- --------------------------------------------------------
+--
+-- Table structure for table `orders`
+--
+
+DROP TABLE IF EXISTS `orders`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `orders` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `order_code` varchar(50) NOT NULL,
+  `bike_id` int(11) NOT NULL,
+  `transaction_id` int(11) DEFAULT NULL,
+  `buyer_id` int(11) NOT NULL,
+  `seller_id` int(11) NOT NULL,
+  `total_price` decimal(15,2) NOT NULL,
+  `shipping_address` text NOT NULL,
+  `order_status` enum('waiting_payment','paid','shipping','completed','cancelled') DEFAULT 'waiting_payment',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `shipping_method` enum('standard','express','pickup') DEFAULT 'standard',
+  `recipient_name` varchar(255) DEFAULT NULL,
+  `recipient_phone` varchar(50) DEFAULT NULL,
+  `payment_method` enum('vietqr','cod','deposit') NOT NULL,
+  `tracking_number` varchar(100) DEFAULT NULL,
+  `note` text DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `order_code` (`order_code`),
+  KEY `bike_id` (`bike_id`),
+  KEY `transaction_id` (`transaction_id`),
+  CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`bike_id`) REFERENCES `bikes` (`id`),
+  CONSTRAINT `orders_ibfk_2` FOREIGN KEY (`transaction_id`) REFERENCES `transactions` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = cp850 */ ;
+/*!50003 SET character_set_results = cp850 */ ;
+/*!50003 SET collation_connection  = cp850_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `trg_order_completed` AFTER UPDATE ON `orders`
+FOR EACH ROW
+BEGIN
+    IF NEW.order_status = 'completed' AND OLD.order_status != 'completed' THEN
+        
+        INSERT INTO `transactions` (
+            `transaction_code`,
+            `sender_id`,
+            `receiver_id`,
+            `amount`,
+            `type`,
+            `status`,
+            `content`
+        ) VALUES (
+            CONCAT('TRX-', NEW.id, '-', UNIX_TIMESTAMP()),
+            NEW.buyer_id,
+            NEW.seller_id,
+            NEW.total_price,
+            'payment',
+            'success',
+            CONCAT('Thanh toán thành công cho đơn hàng #', NEW.order_code)
+        );
+        
+        
+        
+        UPDATE `wallets` SET `balance` = `balance` + NEW.total_price WHERE `user_id` = NEW.seller_id;
+        
+        
+        
+        
+    END IF;
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+
+--
+-- Table structure for table `refund_requests`
+--
+
+DROP TABLE IF EXISTS `refund_requests`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `refund_requests` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `order_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `reason` text DEFAULT NULL,
+  `status` enum('pending','approved','rejected') DEFAULT 'pending',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `settings`
+--
+
+DROP TABLE IF EXISTS `settings`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `settings` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `key_name` varchar(50) NOT NULL,
+  `key_value` text DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `key_name` (`key_name`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `transactions`
+--
+
+DROP TABLE IF EXISTS `transactions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `transactions` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `transaction_code` varchar(50) NOT NULL,
+  `sender_id` int(11) NOT NULL,
+  `receiver_id` int(11) NOT NULL,
+  `amount` decimal(15,2) NOT NULL,
+  `vnp_transaction_no` varchar(50) DEFAULT NULL,
+  `vnp_bank_code` varchar(20) DEFAULT NULL,
+  `vnp_pay_date` datetime DEFAULT NULL,
+  `type` enum('payment','refund','topup','withdraw') NOT NULL,
+  `status` enum('pending','success','failed') DEFAULT 'pending',
+  `content` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `transaction_code` (`transaction_code`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `users`
 --
 
+DROP TABLE IF EXISTS `users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `users` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(50) NOT NULL,
   `email` varchar(100) NOT NULL,
   `password` varchar(255) NOT NULL,
+  `avatar` varchar(255) DEFAULT 'default-avatar.png',
   `phone` varchar(15) DEFAULT NULL,
+  `address` text DEFAULT NULL,
+  `bio` text DEFAULT NULL,
+  `is_verified` tinyint(1) DEFAULT 0,
   `role` enum('admin','user') DEFAULT 'user',
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `status` enum('active','banned') DEFAULT 'active',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `wallets`
+--
+
+DROP TABLE IF EXISTS `wallets`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `wallets` (
+  `user_id` int(11) NOT NULL,
+  `balance` decimal(15,2) DEFAULT 0.00,
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`user_id`),
+  CONSTRAINT `wallets_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
---
--- Dumping data for table `users`
---
-
-INSERT INTO `users` (`id`, `username`, `email`, `password`, `phone`, `role`, `created_at`) VALUES
-(1, 'pain1', 'p@p.com', '$2y$10$k9Eti5IRED1ge0j1osWYt.ngzDcNcLgTyfYejSD./OHHQp9znDf/e', '0123456789', 'user', '2026-03-31 04:48:59');
-
---
--- Indexes for dumped tables
---
-
---
--- Indexes for table `bikes`
---
-ALTER TABLE `bikes`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `user_id` (`user_id`),
-  ADD KEY `category_id` (`category_id`);
-
---
--- Indexes for table `bike_images`
---
-ALTER TABLE `bike_images`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `bike_id` (`bike_id`);
-
---
--- Indexes for table `categories`
---
-ALTER TABLE `categories`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `favorites`
---
-ALTER TABLE `favorites`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `user_bike` (`user_id`,`bike_id`),
-  ADD KEY `bike_id` (`bike_id`);
-
---
--- Indexes for table `reviews`
---
-ALTER TABLE `reviews`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `reviewer_id` (`reviewer_id`),
-  ADD KEY `reviewed_user_id` (`reviewed_user_id`);
-
---
--- Indexes for table `users`
---
-ALTER TABLE `users`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `username` (`username`),
-  ADD UNIQUE KEY `email` (`email`);
-
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `bikes`
---
-ALTER TABLE `bikes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=65;
-
---
--- AUTO_INCREMENT for table `bike_images`
---
-ALTER TABLE `bike_images`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `categories`
---
-ALTER TABLE `categories`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
--- AUTO_INCREMENT for table `favorites`
---
-ALTER TABLE `favorites`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `reviews`
---
-ALTER TABLE `reviews`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `users`
---
-ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
--- Constraints for dumped tables
---
-
---
--- Constraints for table `bikes`
---
-ALTER TABLE `bikes`
-  ADD CONSTRAINT `bikes_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
-  ADD CONSTRAINT `bikes_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`);
-
---
--- Constraints for table `bike_images`
---
-ALTER TABLE `bike_images`
-  ADD CONSTRAINT `bike_images_ibfk_1` FOREIGN KEY (`bike_id`) REFERENCES `bikes` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `favorites`
---
-ALTER TABLE `favorites`
-  ADD CONSTRAINT `favorites_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `favorites_ibfk_2` FOREIGN KEY (`bike_id`) REFERENCES `bikes` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `reviews`
---
-ALTER TABLE `reviews`
-  ADD CONSTRAINT `reviews_ibfk_1` FOREIGN KEY (`reviewer_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `reviews_ibfk_2` FOREIGN KEY (`reviewed_user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
-COMMIT;
-
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
--- Xóa tất cả xe không có ảnh (NULL) hoặc để trống đường dẫn
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2026-05-06  1:03:41

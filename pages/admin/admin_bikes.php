@@ -70,7 +70,7 @@ try {
             <select name="status" class="form-select bg-light">
                 <option value="">Tất cả trạng thái</option>
                 <option value="pending" <?= $statusFilter === 'pending' ? 'selected' : '' ?>>Chờ duyệt</option>
-                <option value="available" <?= $statusFilter === 'available' ? 'selected' : '' ?>>Đang hiển thị</option>
+                <option value="active" <?= $statusFilter === 'active' ? 'selected' : '' ?>>Đang hiển thị</option>
                 <option value="sold" <?= $statusFilter === 'sold' ? 'selected' : '' ?>>Khóa / Hết hàng</option>
             </select>
         </div>
@@ -105,13 +105,15 @@ try {
                         </td>
                     </tr>
                 <?php else: ?>
-                    <?php foreach ($bikes as $bike): 
+                    <?php 
+                    $stt = 1;
+                    foreach ($bikes as $bike): 
                         $sellerName = $bike['seller_name'] ?? 'Ẩn danh';
                         $statusRaw = $bike['status'] ?? '';
                         
                         // Xử lý status badge chuẩn xác theo if-else
                         $badgeHTML = '';
-                        if ($statusRaw === 'available' || $statusRaw === 'active') {
+                        if ($statusRaw === 'active') {
                             $badgeHTML = '<span class="badge bg-success">Đang hiển thị</span>';
                         } elseif ($statusRaw === 'pending' || $statusRaw === 'pending_delivery' || $statusRaw === '') {
                             $badgeHTML = '<span class="badge bg-warning text-dark">Chờ duyệt</span>';
@@ -122,7 +124,7 @@ try {
                         }
                     ?>
                         <tr>
-                            <td class="fw-semibold text-muted">#<?= $bike['id'] ?></td>
+                            <td class="fw-semibold text-muted">#<?= $stt++ ?></td>
                             <td>
                                 <div class="d-flex align-items-center gap-3">
                                     <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; min-width: 60px;">

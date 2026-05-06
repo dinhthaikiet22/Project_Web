@@ -60,8 +60,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     $conn->prepare("UPDATE orders SET order_status = 'cancelled' WHERE id = ?")->execute([$requestData['order_id']]);
                     
                     // Khoản tiền (Transaction) ở môi trường Alpha thường sẽ được ban quản trị hoàn tay qua bank
-                    // Giải phóng xe về trạng thái available
-                    $conn->prepare("UPDATE bikes SET status = 'available' WHERE id = (SELECT bike_id FROM orders WHERE id = ? LIMIT 1)")->execute([$requestData['order_id']]);
+                    // Giải phóng xe về trạng thái active
+                    $conn->prepare("UPDATE bikes SET status = 'active' WHERE id = (SELECT bike_id FROM orders WHERE id = ? LIMIT 1)")->execute([$requestData['order_id']]);
                     
                     $conn->commit();
                     header("Location: ?page=admin_refunds&msg=approve_success");

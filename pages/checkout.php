@@ -22,7 +22,7 @@ try {
     $bikeStmt->execute([$bikeId]);
     $bike = $bikeStmt->fetch(PDO::FETCH_ASSOC);
 
-    if (!$bike || $bike['status'] !== 'available') {
+    if (!$bike || $bike['status'] !== 'active') {
         $_SESSION['error'] = 'Xe không tồn tại hoặc đã được mua.';
         echo "<script>window.location.href='".BASE_URL."?page=shop';</script>";
         exit;

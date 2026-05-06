@@ -1,10 +1,27 @@
 # CycleTrust — Mua bán xe đạp thể thao cũ
 
+![PHP](https://img.shields.io/badge/PHP-Native-777BB4?style=for-the-badge&logo=php&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-Database-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
+![Bootstrap](https://img.shields.io/badge/Bootstrap-5-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white)
+
 **Đồ án UTH** — Nền tảng rao vặt xe đạp thể thao đã qua sử dụng, tập trung minh bạch thông tin và trải nghiệm người dùng.
 
 ## Mô tả
 
 CycleTrust được xây dựng bằng **PHP thuần (Native)**, kết nối cơ sở dữ liệu qua **PDO** (prepared statements), giao diện **Bootstrap 5** và **Font Awesome**. Dự án gồm đăng ký / đăng nhập, đăng tin xe (upload ảnh), danh sách có phân trang, trang chi tiết và quản lý tin đăng cơ bản.
+
+## Quy trình kiểm duyệt tin
+
+Hệ thống hoạt động dựa trên quy trình kiểm duyệt nội dung nhằm đảm bảo chất lượng:
+1. **Người dùng đăng tin**: Seller cung cấp thông tin, hình ảnh chi tiết của xe đạp.
+2. **Admin xét duyệt**: Quản trị viên kiểm tra tính hợp lệ của tin đăng trên Dashboard.
+3. **Hiển thị trang chủ**: Tin đăng sau khi được phê duyệt mới được phép hiển thị ở khu vực công khai để người mua tiếp cận.
+
+## Tính năng Marketing
+
+Để gia tăng giá trị hệ thống đồ án, dự án tích hợp thêm các công cụ hỗ trợ bán hàng:
+- **Hệ thống Coupon**: Cho phép khởi tạo, quản lý và cấp phát mã giảm giá với số lượng/điều kiện tùy chỉnh.
+- **Quản lý Banner**: Quản lý hình ảnh quảng cáo hiển thị ở trang chủ theo chiến dịch Marketing.
 
 ## Yêu cầu môi trường
 
@@ -32,13 +49,20 @@ Thay `<URL-repository-GitHub-của-sinh-viên>` bằng URL thật (HTTPS hoặc 
 
 ### 3. Tạo database và import dữ liệu mẫu
 
-1. M mở **phpMyAdmin** (hoặc MySQL CLI).
+1. Mở **phpMyAdmin** (hoặc MySQL CLI).
 2. Tạo database tên: **`cycle_trust`** (utf8mb4 nếu được hỏi).
 3. Chọn database `cycle_trust` → tab **Import**.
 4. Chọn file: **`database/database.sql`** trong thư mục dự án.
 5. Thực hiện import và kiểm tra không báo lỗi.
 
 File dump mặc định dùng tên database `cycle_trust` (thống nhất với `config/config.php`).
+
+> **Lưu ý:** Nếu trong quá trình import bị thiếu tài khoản Admin, bạn có thể chạy đoạn SQL dự phòng sau để tạo quyền Quản trị cao nhất:
+> ```sql
+> -- Lệnh SQL dự phòng để tạo Admin (Mật khẩu hash của 111111)
+> INSERT INTO users (username, email, password, role) 
+> VALUES ('admin', 'admin@admin.com', '$2y$10$8W3Y6G8Q1j2zYyK/E/zSre.m7B6A7f9.X8LhX.6o3.Z.u9n6W5S1i', 'admin');
+> ```
 
 ### 4. Cấu hình kết nối PHP (nếu cần)
 
@@ -59,16 +83,15 @@ Mặc định thường dùng với XAMPP: `root`, mật khẩu rỗng.
 
 Trong **`database/database.sql`**, bảng `users` có **dữ liệu mẫu**:
 
-| Username | Email   | Vai trò (`role`) | Ghi chú |
-|----------|---------|------------------|---------|
-| `pain1`  | `p@p.com` | `user`         | Mật khẩu lưu dạng **bcrypt** trong dump; không kèm plain-text. |
-
-**Không có tài khoản `admin` riêng được seed sẵn** trong file dump này (chỉ enum `admin`/`user` trên cột `role`).
+| Username | Email           | Mật khẩu   | Vai trò (`role`) | Ghi chú |
+|----------|-----------------|------------|------------------|---------|
+| `admin`  | `admin@admin.com` | `111111`   | `admin`          | Mật khẩu Admin được thiết lập để demo nhanh, khuyến nghị đổi ngay sau khi bàn giao. |
+| `pain1`  | `p@p.com`       | *ẩn*       | `user`           | Mật khẩu lưu dạng **bcrypt** trong dump. |
 
 **Gợi ý cho giảng viên:**
 
-- Dùng chức năng **Đăng ký** trên website để tạo user mới và đăng nhập, hoặc
-- Trong phpMyAdmin tạo user mới / cập nhật cột `password` bằng hash từ `password_hash()` trong PHP.
+- Đăng nhập bằng tài khoản Admin để truy cập khu vực Dashboard Quản trị.
+- Dùng chức năng **Đăng ký** trên website để tạo user mới và test tính năng mua/bán.
 
 ## Cấu trúc thư mục (rút gọn)
 
@@ -90,4 +113,4 @@ CycleTrust/
 
 ---
 
-*Nếu có thắc mắc kỹ thuật khi chạy thử (404, lỗi PDO, import SQL), sinh viên nên kiểm tra `BASE_URL`, tên database `cycle_trust`, và log lỗi PHP/Apache.*
+*Nếu có thắc mắc kỹ thuật khi chạy thử (404, lỗi PDO, import SQL), xin hãy kiểm tra `BASE_URL`, tên database `cycle_trust`, và log lỗi PHP/Apache.*

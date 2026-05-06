@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . '/config/db.php';
+require __DIR__ . '/../config/db.php';
 try {
     $stmt = $conn->prepare("UPDATE bikes SET status = 'available' WHERE id IN (SELECT bike_id FROM orders WHERE order_status = 'waiting_payment')");
     $stmt->execute();

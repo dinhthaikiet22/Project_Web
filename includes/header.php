@@ -50,38 +50,42 @@
         max-width: 600px;
         width: 100%;
     }
-    .ct-search-input-wrapper {
+    .search-wrapper {
         position: relative;
-        display: flex;
-        align-items: center;
         background: #f8f9fa;
-        border: 1.5px solid #e9ecef;
-        border-radius: 50px;
+        border: 1px solid #ddd;
+        border-radius: 25px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         transition: all 0.2s ease-in-out;
-        padding: 4px 16px;
     }
-    .ct-search-input-wrapper:focus-within {
+    .search-wrapper:focus-within {
         border-color: #FF5722;
         background: #fff;
         box-shadow: 0 0 0 4px rgba(255, 87, 34, 0.1);
     }
-    .ct-search-icon {
-        color: #adb5bd;
+    .search-wrapper .ct-search-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #888;
         font-size: 1rem;
+        z-index: 1;
     }
-    .ct-search-input-wrapper:focus-within .ct-search-icon {
+    .search-wrapper:focus-within .ct-search-icon {
         color: #FF5722;
     }
-    .ct-search-input {
+    .search-wrapper .ct-search-input {
         border: none;
         background: transparent;
         box-shadow: none !important;
-        padding: 8px 12px;
+        padding: 10px 20px 10px 40px;
         font-size: 0.95rem;
         width: 100%;
         outline: none;
+        border-radius: 25px;
     }
-    .ct-search-input::placeholder {
+    .search-wrapper .ct-search-input::placeholder {
         color: #adb5bd;
     }
 
@@ -179,7 +183,7 @@
         <div class="ct-search-box w-100 mx-auto">
           <form action="<?= BASE_URL ?>" method="get" class="m-0">
             <input type="hidden" name="page" value="shop">
-            <div class="ct-search-input-wrapper">
+            <div class="search-wrapper" style="position: relative;">
               <i class="fa-solid fa-magnifying-glass ct-search-icon"></i>
               <input 
                 type="text" 

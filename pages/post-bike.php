@@ -1,10 +1,20 @@
 <?php
 declare(strict_types=1);
 
- if (!isset($_SESSION['user_id'])) {
-     header('Location: ' . BASE_URL . '?page=login');
-     exit;
- }
+if (!isset($_SESSION['user_id'])) {
+    header('Location: ' . BASE_URL . '?page=login');
+    exit;
+}
+
+// Fetch categories from DB
+$conn = require_once __DIR__ . '/../config/db.php';
+$categories = [];
+try {
+    $stmt = $conn->query("SELECT id, name FROM categories ORDER BY name ASC");
+    $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    // Ignore error, categories array will be empty
+}
 ?>
 
 <section class="py-5" style="background: var(--bg);">
@@ -37,7 +47,7 @@ declare(strict_types=1);
         <?php unset($_SESSION['success']); ?>
       <?php endif; ?>
 
-      <form method="POST" action="<?= BASE_URL ?>modules/bike/save_bike.php" enctype="multipart/form-data">
+      <form method="POST" action="<?= BASE_URL ?>modules/handle_post_bike.php" enctype="multipart/form-data">
         
         <h3 class="fw-700 mb-4 border-bottom pb-2">1. Thông tin cơ bản</h3>
 
@@ -55,9 +65,13 @@ declare(strict_types=1);
           <div class="ct-form-group">
             <label for="category" class="ct-form-label">Danh mục</label>
             <select id="category" name="category_id" class="ct-select">
-              <option value="1">Road Bike</option>
-              <option value="2">Mountain Bike</option>
-              <option value="3">City Bike</option>
+              <?php if (!empty($categories)): ?>
+                <?php foreach ($categories as $cat): ?>
+                  <option value="<?= htmlspecialchars((string)$cat['id']) ?>"><?= htmlspecialchars((string)$cat['name']) ?></option>
+                <?php endforeach; ?>
+              <?php else: ?>
+                <option value="1">Danh mục mặc định</option>
+              <?php endif; ?>
             </select>
           </div>
         </div>
@@ -80,9 +94,6 @@ declare(strict_types=1);
         <div class="ct-form-group">
           <label for="location" class="ct-form-label">Khu vực xem xe</label>
           <input id="location" name="location" type="text" class="ct-input" placeholder="vd: Quận 1, TP.HCM">
-          
-          <input type="hidden" name="latitude" id="inputLat" value="10.7769">
-          <input type="hidden" name="longitude" id="inputLng" value="106.7009">
         </div>
 
         <h3 class="fw-700 mb-4 mt-5 border-bottom pb-2">2. Hình ảnh</h3>
@@ -124,23 +135,4 @@ declare(strict_types=1);
     </div>
   </div>
 </section>
-
-<script>
-document.getElementById('location').addEventListener('input', function(e) {
-    let text = e.target.value.toLowerCase();
-    let lat = 10.7769; // Default (Q1)
-    let lng = 106.7009;
-
-    // Giả lập vài tọa độ cơ bản của TP.HCM
-    if (text.includes('quận 1')) { lat = 10.7769; lng = 106.7009; }
-    else if (text.includes('quận 2')) { lat = 10.7871; lng = 106.7485; }
-    else if (text.includes('quận 3')) { lat = 10.7824; lng = 106.6853; }
-    else if (text.includes('quận 4')) { lat = 10.7617; lng = 106.7082; }
-    else if (text.includes('quận 7')) { lat = 10.7325; lng = 106.7323; }
-    else if (text.includes('thủ đức')) { lat = 10.8505; lng = 106.7588; }
-    else if (text.includes('bình thạnh')) { lat = 10.8105; lng = 106.7091; }
-
-    document.getElementById('inputLat').value = lat;
-    document.getElementById('inputLng').value = lng;
-});
-</script>
+

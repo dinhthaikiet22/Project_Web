@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 session_start();
 
-require_once '../../config/config.php';
-$conn = require_once '../../config/db.php';
+require_once __DIR__ . '/../config/config.php';
+$conn = require_once __DIR__ . '/../config/db.php';
 
 function redirectWithError(string $message): void
 {
@@ -50,7 +50,7 @@ function saveUploadedImage(array $file, string $uploadDir): ?string
         }
     }
 
-    $newFileName = uniqid('', true) . '_' . basename($originalName);
+    $newFileName = time() . '_' . uniqid('', true) . '_' . basename($originalName);
     $targetPath = $uploadDir . $newFileName;
     if (!move_uploaded_file($tmpName, $targetPath)) {
         throw new RuntimeException('Lỗi hệ thống: Không thể lưu file vào thư mục public/uploads/bikes/.');
@@ -73,19 +73,11 @@ $priceRaw = trim((string)($_POST['price'] ?? ''));
 $location = trim((string)($_POST['location'] ?? ''));
 $description = trim((string)($_POST['description'] ?? ''));
 
-// --- BẮT ĐẦU: CODE BỔ SUNG ĐỂ NHẬN TỌA ĐỘ ---
-$latitudeRaw = trim((string)($_POST['latitude'] ?? ''));
-$longitudeRaw = trim((string)($_POST['longitude'] ?? ''));
-
-$latitude = ($latitudeRaw !== '' && is_numeric($latitudeRaw)) ? (float)$latitudeRaw : null;
-$longitude = ($longitudeRaw !== '' && is_numeric($longitudeRaw)) ? (float)$longitudeRaw : null;
-// --- KẾT THÚC: CODE BỔ SUNG ĐỂ NHẬN TỌA ĐỘ ---
-
 $categoryId = ctype_digit($categoryIdRaw) ? (int)$categoryIdRaw : 0;
 if ($categoryId === 0 && $categoryIdRaw !== '') {
     $categoryId = 1;
 }
-$price = ($priceRaw !== '' && is_numeric($priceRaw)) ? (int)$priceRaw : 0;
+$price = ($priceRaw !== '' && is_numeric($priceRaw)) ? (float)$priceRaw : 0;
 
 if ($title === '') {
     redirectWithError('Vui lòng nhập tên xe đạp.');
@@ -103,7 +95,7 @@ if (!isset($_FILES['image']) || !is_array($_FILES['image'])) {
     redirectWithError('Vui lòng chọn hình ảnh chính cho xe.');
 }
 
-$uploadDir = __DIR__ . '/../../public/uploads/bikes/';
+$uploadDir = __DIR__ . '/../public/uploads/bikes/';
 $uploadedFiles = [];
 
 try {
@@ -138,25 +130,20 @@ try {
 
     $conn->beginTransaction();
 
-    // --- BẮT ĐẦU: CẬP NHẬT LỆNH SQL ĐỂ LƯU THÊM LATITUDE VÀ LONGITUDE ---
     $insertBike = $conn->prepare(
-        'INSERT INTO bikes (user_id, category_id, title, price, brand, condition_status, description, image_url, location, latitude, longitude, status)
-         VALUES (:user_id, :category_id, :title, :price, :brand, :condition_status, :description, :image_url, :location, :latitude, :longitude, \'pending\')'
+        'INSERT INTO bikes (user_id, category_id, title, price, brand, condition_status, description, image_url, location, status)
+         VALUES (:user_id, :category_id, :title, :price, :brand, :condition_status, :description, :image_url, :location, \'pending\')'
     );
-    $insertBike->execute([
-        ':user_id' => $userId,
-        ':category_id' => $categoryId,
-        ':title' => $title,
-        ':price' => $price,
-        ':brand' => $brand,
-        ':condition_status' => $conditionStatus,
-        ':description' => $description,
-        ':image_url' => $mainFileName,
-        ':location' => $location,
-        ':latitude' => $latitude,
-        ':longitude' => $longitude,
-    ]);
-    // --- KẾT THÚC: CẬP NHẬT LỆNH SQL ---
+    $insertBike->bindValue(':user_id', $userId, PDO::PARAM_INT);
+    $insertBike->bindValue(':category_id', $categoryId, PDO::PARAM_INT);
+    $insertBike->bindValue(':title', $title, PDO::PARAM_STR);
+    $insertBike->bindValue(':price', $price, PDO::PARAM_STR);
+    $insertBike->bindValue(':brand', $brand, PDO::PARAM_STR);
+    $insertBike->bindValue(':condition_status', $conditionStatus, PDO::PARAM_STR);
+    $insertBike->bindValue(':description', $description, PDO::PARAM_STR);
+    $insertBike->bindValue(':image_url', $mainFileName, PDO::PARAM_STR);
+    $insertBike->bindValue(':location', $location, PDO::PARAM_STR);
+    $insertBike->execute();
 
     $bikeId = (int)$conn->lastInsertId();
     if ($bikeId <= 0) {
@@ -167,16 +154,14 @@ try {
         'INSERT INTO bike_images (bike_id, image_url) VALUES (:bike_id, :image_url)'
     );
     foreach ($galleryPaths as $path) {
-        $insertGallery->execute([
-            ':bike_id' => $bikeId,
-            ':image_url' => $path,
-        ]);
+        $insertGallery->bindValue(':bike_id', $bikeId, PDO::PARAM_INT);
+        $insertGallery->bindValue(':image_url', $path, PDO::PARAM_STR);
+        $insertGallery->execute();
     }
 
     $conn->commit();
 
     $_SESSION['success'] = 'Đăng tin thành công!';
-    // Mình sửa lại chuyển hướng về trang my-postings để bạn tiện xem thành quả vừa đăng
     header('Location: ' . BASE_URL . '?page=my-postings');
     exit;
 } catch (PDOException $e) {

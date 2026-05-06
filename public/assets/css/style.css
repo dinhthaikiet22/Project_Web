@@ -19,9 +19,9 @@
   --success: #10b981; 
   --danger: #ef4444;  
 
-  --radius: 12px;
-  --radius-sm: 8px;
-  --radius-lg: 16px; 
+  --radius: 8px;
+  --radius-sm: 4px;
+  --radius-lg: 12px; 
 
   --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05); 
   --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
@@ -472,7 +472,7 @@ a.btn {
   background: var(--ink);
   color: #fff;
   padding: 10px 14px;
-  border-radius: 10px;
+  border-radius: 8px;
   font-weight: 600;
   letter-spacing: 0.2px;
   display: inline-flex;
@@ -526,11 +526,25 @@ a.btn {
 }
 
 .ct-btn-hero.btn-ghost {
-  border-radius: 10px;
+  border-radius: 8px;
 }
 
 .ct-btn-hero.btn-primary {
-  border-radius: 10px;
+  border-radius: 8px;
+}
+
+.btn-buy-now {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1.2;
+  padding: 10px 0;
+  width: 100%;
+  font-weight: 800;
+  text-transform: uppercase;
+  border-radius: 8px;
 }
 
 .btn-outline {
@@ -620,7 +634,7 @@ a.btn {
 }
 
 .ct-dropdown {
-  border-radius: 14px;
+  border-radius: 12px;
   border: 1px solid rgba(33, 33, 33, 0.08);
   box-shadow: 0 18px 50px rgba(0, 0, 0, 0.22);
   padding: 10px;
@@ -668,7 +682,7 @@ a.btn {
   position: relative;
   display: block;
   height: 410px;
-  border-radius: 12px;
+  border-radius: 8px;
   overflow: hidden;
   transform: translateZ(0);
 }
@@ -730,7 +744,7 @@ a.btn {
 .ct-bike-card {
   background: #fff;
   border: 0;
-  border-radius: 12px;
+  border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 10px 30px rgba(0,0,0,0.06);
   transition: transform 220ms var(--ease), box-shadow 220ms var(--ease);

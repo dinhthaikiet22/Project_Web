@@ -28,7 +28,7 @@ try {
     $usersQuery = $conn->query("SELECT COUNT(*) FROM users");
     $totalUsers = $usersQuery->fetchColumn() ?: 0;
 
-    $bikesQuery = $conn->query("SELECT COUNT(*) FROM bikes WHERE status = 'available'");
+    $bikesQuery = $conn->query("SELECT COUNT(*) FROM bikes WHERE status = 'active'");
     $totalBikes = $bikesQuery->fetchColumn() ?: 0;
 
     // Marketplace Pulse (Hoạt động gần đây)
@@ -41,6 +41,53 @@ try {
         ORDER BY created_at DESC LIMIT 6
     ");
     $pulseData = $pulseQuery->fetchAll(PDO::FETCH_ASSOC);
+
+    // Pending Actions Counting
+    $pendingBikesCount = 0;
+    try {
+        $pendingBikesCount = $conn->query("SELECT COUNT(*) FROM bikes WHERE status = 'pending'")->fetchColumn() ?: 0;
+    } catch (PDOException $e) {}
+
+    $pendingRefundsCount = 0;
+    try {
+        $pendingRefundsCount = $conn->query("SELECT COUNT(*) FROM refund_requests")->fetchColumn() ?: 0;
+    } catch (PDOException $e) {}
+
+    $vnpayErrorCount = 0;
+    try {
+        $vnpayErrorCount = $conn->query("SELECT COUNT(*) FROM transactions WHERE status = 'error'")->fetchColumn() ?: 0;
+    } catch (PDOException $e) {}
+
+    // Sức khỏe tài chính
+    $availableFunds = 0;
+    try {
+        $availableFunds = $conn->query("SELECT SUM(total_price) FROM orders WHERE order_status = 'completed'")->fetchColumn() ?: 0;
+    } catch (PDOException $e) {}
+
+    $pendingFunds = 0;
+    try {
+        $pendingFunds = $conn->query("SELECT SUM(total_price) FROM orders WHERE order_status = 'waiting_payment'")->fetchColumn() ?: 0;
+    } catch (PDOException $e) {}
+
+    // Doanh thu theo danh mục
+    $categoryLabels = [];
+    $categoryRevenueData = [];
+    try {
+        $catRevQuery = $conn->query("
+            SELECT c.name as category_name, COALESCE(SUM(o.total_price), 0) as total_revenue
+            FROM categories c
+            LEFT JOIN bikes b ON c.id = b.category_id
+            LEFT JOIN orders o ON b.id = o.bike_id AND o.order_status = 'paid'
+            GROUP BY c.id, c.name
+            ORDER BY total_revenue DESC, c.id ASC
+            LIMIT 5
+        ");
+        $catData = $catRevQuery->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($catData as $row) {
+            $categoryLabels[] = $row['category_name'];
+            $categoryRevenueData[] = (float)$row['total_revenue'];
+        }
+    } catch (PDOException $e) {}
 
 } catch (PDOException $e) {
     echo '<div class="alert alert-danger">Lỗi truy xuất cơ sở dữ liệu Dashboard: ' . htmlspecialchars($e->getMessage()) . '</div>';
@@ -64,18 +111,27 @@ if ($totalOrders == 0) $totalOrders = 1245;
 if ($totalUsers == 0) $totalUsers = 8492;
 if ($totalBikes == 0) $totalBikes = 425;
 
-$categoryLabels = ['Road', 'Mountain', 'Electric', 'BMX'];
-$categoryRevenueData = [150, 220, 180, 50]; // FAKE DATA in millions
-
 function timeAgo($datetime, $full = false) {
     $now = new DateTime;
     $ago = new DateTime($datetime);
     $diff = $now->diff($ago);
-    $diff->w = floor($diff->d / 7);
-    $diff->d -= $diff->w * 7;
+    
+    $w = floor($diff->d / 7);
+    $d = $diff->d - ($w * 7);
+    
+    $parts = [
+        'y' => $diff->y,
+        'm' => $diff->m,
+        'w' => $w,
+        'd' => $d,
+        'h' => $diff->h,
+        'i' => $diff->i,
+        's' => $diff->s,
+    ];
+    
     $string = ['y'=>'năm','m'=>'tháng','w'=>'tuần','d'=>'ngày','h'=>'giờ','i'=>'phút','s'=>'giây'];
     foreach ($string as $k => &$v) {
-        if ($diff->$k) { $v = $diff->$k . ' ' . $v; } else { unset($string[$k]); }
+        if ($parts[$k]) { $v = $parts[$k] . ' ' . $v; } else { unset($string[$k]); }
     }
     if (!$full) $string = array_slice($string, 0, 1);
     return $string ? implode(', ', $string) . ' trước' : 'vừa xong';
@@ -419,20 +475,25 @@ h1, h2, h3, h4, h5, h6, .text-dark, .fw-bold {
                 <div class="d-flex flex-column gap-3">
                     <a href="?page=admin_bikes" class="text-decoration-none p-3 rounded d-flex justify-content-between align-items-center widget-hover-effect" style="background: rgba(32,107,196,0.1); border: 1px solid rgba(32,107,196,0.2); transition: 0.2s;">
                         <span class="fw-semibold text-white"><i class="ti ti-bike me-2" style="color: #206bc4;"></i> Duyệt xe mới</span>
-                        <span class="badge rounded-pill bg-primary fs-6">05</span>
+                        <span class="badge rounded-pill bg-primary fs-6"><?= str_pad((string)$pendingBikesCount, 2, '0', STR_PAD_LEFT) ?></span>
                     </a>
                     <a href="?page=admin_refunds" class="text-decoration-none p-3 rounded d-flex justify-content-between align-items-center widget-hover-effect" style="background: rgba(255,92,0,0.1); border: 1px solid rgba(255,92,0,0.2); transition: 0.2s;">
                         <span class="fw-semibold text-white"><i class="ti ti-receipt-refund me-2" style="color: #ff5c00;"></i> Khiếu nại / Hoàn tiền</span>
-                        <span class="badge rounded-pill fs-6" style="background: #ff5c00;">02</span>
+                        <span class="badge rounded-pill fs-6" style="background: #ff5c00;"><?= str_pad((string)$pendingRefundsCount, 2, '0', STR_PAD_LEFT) ?></span>
                     </a>
                     <a href="?page=admin_vnpay" class="text-decoration-none p-3 rounded d-flex justify-content-between align-items-center widget-hover-effect" style="background: rgba(238,93,80,0.1); border: 1px solid rgba(238,93,80,0.2); transition: 0.2s;">
                         <span class="fw-semibold text-white"><i class="ti ti-alert-triangle me-2" style="color: #ee5d50;"></i> Đối soát VNPAY lỗi</span>
-                        <span class="badge rounded-pill fs-6" style="background: #ee5d50;">01</span>
+                        <span class="badge rounded-pill fs-6" style="background: #ee5d50;"><?= str_pad((string)$vnpayErrorCount, 2, '0', STR_PAD_LEFT) ?></span>
                     </a>
                 </div>
             </div>
 
             <!-- Financial Health -->
+            <?php 
+                $totalFunds = $availableFunds + $pendingFunds;
+                $availPercent = $totalFunds > 0 ? round(($availableFunds / $totalFunds) * 100) : 100;
+                $pendPercent = $totalFunds > 0 ? round(($pendingFunds / $totalFunds) * 100) : 0;
+            ?>
             <div class="admin-card">
                 <h5 class="fw-bold mb-3 d-flex align-items-center"><i class="ti ti-wallet me-2 text-success"></i> Sức khỏe tài chính</h5>
                 <div class="d-flex justify-content-between mb-2">
@@ -440,12 +501,12 @@ h1, h2, h3, h4, h5, h6, .text-dark, .fw-bold {
                     <span class="text-white fw-semibold small">Tiền đang treo</span>
                 </div>
                 <div class="progress" style="height: 12px; background: rgba(255,255,255,0.1); border-radius: 6px; overflow: hidden; display:flex;">
-                    <div style="width: 82%; background: #05CD99; height: 100%;"></div>
-                    <div style="width: 18%; background: #ff5c00; height: 100%;"></div>
+                    <div style="width: <?= $availPercent ?>%; background: #05CD99; height: 100%;"></div>
+                    <div style="width: <?= $pendPercent ?>%; background: #ff5c00; height: 100%;"></div>
                 </div>
                 <div class="d-flex justify-content-between mt-2">
-                    <span class="text-success small fw-bold">820,500,000 ₫</span>
-                    <span class="small fw-bold" style="color: #ff5c00;">180,000,000 ₫</span>
+                    <span class="text-success small fw-bold"><?= number_format((float)$availableFunds, 0, ',', '.') ?> ₫</span>
+                    <span class="small fw-bold" style="color: #ff5c00;"><?= number_format((float)$pendingFunds, 0, ',', '.') ?> ₫</span>
                 </div>
             </div>
         </div>
