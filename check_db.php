@@ -1,1 +1,0 @@
-<?php file_put_contents("schema.txt", ""); $c = require "config/db.php"; $tables = ["wallets", "transactions", "orders", "bikes"]; foreach($tables as $t) { file_put_contents("schema.txt", "\n--- $t ---\n", FILE_APPEND); foreach($c->query("DESCRIBE $t") as $r) { file_put_contents("schema.txt", $r["Field"] . " " . $r["Type"] . "\n", FILE_APPEND); } } ?>
