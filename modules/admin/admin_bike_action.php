@@ -29,8 +29,8 @@ try {
 
     switch ($action) {
         case 'approve':
-            // Duyệt tin đăng -> Chuyển thành trạng thái hoạt động (available)
-            $sql = "UPDATE bikes SET status = 'available' WHERE id = ?";
+            // Duyệt tin đăng -> Chuyển thành trạng thái hoạt động (active)
+            $sql = "UPDATE bikes SET status = 'active' WHERE id = ?";
             break;
             
         case 'ban':

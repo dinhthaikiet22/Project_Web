@@ -4,40 +4,48 @@ declare(strict_types=1);
 /** @var PDO $conn */
 $conn = require __DIR__ . '/../config/db.php';
 
-// Xe mới đăng: 8 tin mới nhất đang bán
 $featuredBikes = [];
 try {
     $stmt = $conn->query(
-        "SELECT b.* FROM bikes b INNER JOIN (SELECT title, MAX(id) AS max_id FROM bikes WHERE status = 'available' GROUP BY title) latest ON b.id = latest.max_id ORDER BY b.id DESC LIMIT 8"
+        "SELECT b.* FROM bikes b INNER JOIN (SELECT title, MAX(id) AS max_id FROM bikes WHERE status = 'active' GROUP BY title) latest ON b.id = latest.max_id ORDER BY b.id DESC LIMIT 8"
     );
     $featuredBikes = $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
 } catch (PDOException $e) {
     $featuredBikes = [];
 }
 
+// Lấy danh sách banner đang hoạt động
+$activeBanners = [];
+try {
+    $stmt = $conn->query("SELECT * FROM banners WHERE status = 'active' ORDER BY id DESC");
+    $activeBanners = $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
+} catch (PDOException $e) {
+    $activeBanners = [];
+}
+
 $defaultBikeImage = BASE_URL . 'public/assets/images/default-bike.jpg';
 ?>
 
 <style>
-.hero-banner {
+.hero-carousel {
     position: relative;
-    overflow: hidden;
-    height: 100vh;
+    width: 100%;
 }
-.hero-video {
-    position: absolute;
+.hero-carousel img {
+    width: 100%;
+    aspect-ratio: 1920 / 600;
+    object-fit: cover;
+    display: block;
+}
+.hero-video-fallback {
     width: 100%;
     height: 100vh;
     object-fit: cover;
-    z-index: -1;
-    top: 0;
-    left: 0;
 }
 .hero-overlay {
     position: absolute;
     width: 100%;
-    height: 100vh;
-    /* Gradient tối dồn về bên trái để text nổi bật, bên phải trong suốt để thấy rõ xe/người trong video */
+    height: 100%;
     background: linear-gradient(90deg, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.5) 45%, rgba(0, 0, 0, 0) 100%);
     z-index: 0;
     top: 0;
@@ -45,47 +53,76 @@ $defaultBikeImage = BASE_URL . 'public/assets/images/default-bike.jpg';
 }
 .hero-content-box {
     max-width: 650px;
-    padding-bottom: 5vh; /* Nâng nhẹ nội dung lên trên */
+    padding-bottom: 5vh;
 }
 @media (max-width: 768px) {
-    .hero-overlay {
-        background: linear-gradient(180deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.5) 60%, rgba(0, 0, 0, 0.1) 100%);
-    }
-    .hero-content-box {
-        max-width: 100%;
+    .hero-carousel img {
+        aspect-ratio: 16 / 9;
     }
 }
 .ct-bike-card__media {
     aspect-ratio: 3/2;
     background-color: #f8f9fa;
     padding: 15px;
+    position: relative;
 }
 </style>
-<section class="hero-banner">
-  <video autoplay muted loop playsinline poster="<?= BASE_URL ?>public/assets/images/hero-fallback.jpg" class="hero-video" style="display: block !important; visibility: visible !important;">
-    <source src="public/assets/videos/hero-bg.mp4" type="video/mp4">
-  </video>
-  <div class="hero-overlay"></div>
-  <div class="hero-banner__content">
-    <div class="hero-banner__inner">
-      <div class="hero-content-box">
-        <div class="hero-banner__kicker">
-          <i class="fa-solid fa-shield-halved"></i>
-          Minh bạch thông số • Giao dịch an tâm
+
+<section class="hero-carousel">
+    <?php if (!empty($activeBanners)): ?>
+        <div id="homeBannerCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                <?php foreach ($activeBanners as $index => $banner): ?>
+                    <div class="carousel-item <?= $index === 0 ? 'active' : '' ?>">
+                        <?php if (!empty($banner['link_url'])): ?>
+                            <a href="<?= htmlspecialchars((string)$banner['link_url'], ENT_QUOTES, 'UTF-8') ?>">
+                                <img src="<?= htmlspecialchars((string)$banner['image_url'], ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars((string)$banner['title'], ENT_QUOTES, 'UTF-8') ?>">
+                            </a>
+                        <?php else: ?>
+                            <img src="<?= htmlspecialchars((string)$banner['image_url'], ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars((string)$banner['title'], ENT_QUOTES, 'UTF-8') ?>">
+                        <?php endif; ?>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+            <?php if (count($activeBanners) > 1): ?>
+                <button class="carousel-control-prev" type="button" data-bs-target="#homeBannerCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#homeBannerCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            <?php endif; ?>
         </div>
-        <h1 class="hero-banner__title" style="font-size: clamp(2.4rem, 5.5vw, 5rem);">
-          KHÁM PHÁ XE ĐẠP<br>
-          <span class="ct-accent">CHÍNH HÃNG</span>
-        </h1>
-        <div class="hero-banner__actions">
-          <a class="btn ct-btn-hero-dark" href="<?= BASE_URL ?>?page=shop">
-            Khám phá ngay
-            <i class="fa-solid fa-arrow-right ms-2"></i>
-          </a>
+    <?php else: ?>
+        <div class="position-relative overflow-hidden" style="height: 100vh;">
+            <video autoplay muted loop playsinline poster="<?= BASE_URL ?>public/assets/images/hero-fallback.jpg" class="hero-video-fallback" style="display: block !important; visibility: visible !important;">
+                <source src="public/assets/videos/hero-bg.mp4" type="video/mp4">
+            </video>
+            <div class="hero-overlay"></div>
+            <div class="hero-banner__content position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center">
+                <div class="container">
+                    <div class="hero-content-box text-white">
+                        <div class="hero-banner__kicker mb-3" style="font-size: 1.1rem; text-transform: uppercase; letter-spacing: 2px;">
+                            <i class="fa-solid fa-shield-halved text-warning"></i>
+                            Minh bạch thông số • Giao dịch an tâm
+                        </div>
+                        <h1 class="hero-banner__title fw-bold mb-4" style="font-size: clamp(2.4rem, 5.5vw, 5rem); line-height: 1.1;">
+                            KHÁM PHÁ XE ĐẠP<br>
+                            <span class="text-warning">CHÍNH HÃNG</span>
+                        </h1>
+                        <div class="hero-banner__actions mt-4">
+                            <a class="btn btn-warning btn-lg fw-bold px-4 py-3 rounded-pill" href="<?= BASE_URL ?>?page=shop">
+                                Khám phá ngay
+                                <i class="fa-solid fa-arrow-right ms-2"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  </div>
+    <?php endif; ?>
 </section>
 
 <section class="ct-cat-nav">
@@ -237,6 +274,7 @@ $defaultBikeImage = BASE_URL . 'public/assets/images/default-bike.jpg';
                     style="object-fit: contain; width: 100%; height: 100%;"
                   >
                 <?php endif; ?>
+
               </div>
               <div class="ct-bike-card__body d-flex flex-column flex-grow-1">
                 <h3 class="ct-bike-card__title">

@@ -99,7 +99,7 @@ if ($categoryId > 0) {
         $simStmt = $conn->prepare(
             "SELECT id, title, brand, price, condition_status, image_url, location
              FROM bikes
-             WHERE category_id = ? AND id != ? AND status = 'available'
+             WHERE category_id = ? AND id != ? AND status = 'active'
              ORDER BY created_at DESC
              LIMIT 4"
         );
@@ -512,10 +512,7 @@ echo '<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.
             <?php endif; ?>
           </div>
 
-          <button type="button" class="btn w-100 py-3 rounded-3" style="border:1.5px solid rgba(33,33,33,.2);font-weight:600;transition:border-color .2s,color .2s;" onmouseover="this.style.borderColor='#ff5722';this.style.color='#ff5722';" onmouseout="this.style.borderColor='rgba(33,33,33,.2)';this.style.color='';">
-            <i class="fa-regular fa-heart me-2"></i>
-            Thêm vào yêu thích
-          </button>
+
 
         </div>
       </div>

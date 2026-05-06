@@ -28,7 +28,7 @@ try {
     $usersQuery = $conn->query("SELECT COUNT(*) FROM users");
     $totalUsers = $usersQuery->fetchColumn() ?: 0;
 
-    $bikesQuery = $conn->query("SELECT COUNT(*) FROM bikes WHERE status = 'available'");
+    $bikesQuery = $conn->query("SELECT COUNT(*) FROM bikes WHERE status = 'active'");
     $totalBikes = $bikesQuery->fetchColumn() ?: 0;
 
     // Marketplace Pulse (Hoạt động gần đây)

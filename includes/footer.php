@@ -122,6 +122,72 @@ if (!empty($_SESSION['error'])) {
 </script>
 <?php endif; ?>
 
+<style>
+.btn-favorite.active i {
+    color: red !important;
+}
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const favoriteButtons = document.querySelectorAll('.btn-favorite');
+    
+    favoriteButtons.forEach(button => {
+        button.addEventListener('click', async function(e) {
+            e.preventDefault();
+            e.stopPropagation(); // Ngăn chặn nổi bọt (ví dụ khi nhấn vào thẻ card)
+            
+            const bikeId = this.getAttribute('data-id');
+            const icon = this.querySelector('i');
+            
+            if (!bikeId) return;
+
+            try {
+                // Tạo form data để gửi bằng POST
+                const formData = new FormData();
+                formData.append('bike_id', bikeId);
+
+                const response = await fetch('<?= BASE_URL ?>modules/handle_favorite.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'unauthorized') {
+                    // Nếu dùng SweetAlert2 (đã được include trong footer)
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Yêu cầu đăng nhập',
+                            text: 'Bạn cần đăng nhập để thêm xe vào danh sách yêu thích.',
+                            confirmButtonText: 'Đăng nhập ngay',
+                            showCancelButton: true,
+                            cancelButtonText: 'Đóng'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.href = '<?= BASE_URL ?>?page=login';
+                            }
+                        });
+                    } else {
+                        alert('Bạn cần đăng nhập để thêm xe vào danh sách yêu thích.');
+                    }
+                } else if (data.status === 'success') {
+                    if (data.action === 'added') {
+                        this.classList.add('active');
+                    } else if (data.action === 'removed') {
+                        this.classList.remove('active');
+                    }
+                } else {
+                    console.error('Lỗi yêu thích:', data.message);
+                }
+            } catch (error) {
+                console.error('Lỗi khi gọi API yêu thích:', error);
+            }
+        });
+    });
+});
+</script>
+
 </body>
 </html>
 

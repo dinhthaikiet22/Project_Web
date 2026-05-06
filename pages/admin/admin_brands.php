@@ -26,9 +26,20 @@ try {
     // Giả định bảng bikes lưu tên hãng tại cột 'brand' dạng string
     // Bổ sung cú pháp COLLATE utf8mb4_unicode_ci để tránh lỗi Illegal mix of collations
     $sql = "SELECT br.id, br.name, br.origin, br.description, br.image_url,
-            (SELECT COUNT(*) FROM bikes b WHERE b.brand COLLATE utf8mb4_unicode_ci = br.name COLLATE utf8mb4_unicode_ci) AS bike_count
+            (CASE 
+                WHEN br.name = 'Thương hiệu khác' THEN 
+                    (SELECT COUNT(id) FROM bikes b2 
+                     WHERE NOT EXISTS (
+                         SELECT 1 FROM brands b3 
+                         WHERE b3.name != 'Thương hiệu khác' 
+                           AND b2.brand COLLATE utf8mb4_unicode_ci LIKE CONCAT('%', b3.name, '%') COLLATE utf8mb4_unicode_ci
+                     ))
+                ELSE 
+                    (SELECT COUNT(id) FROM bikes b2 
+                     WHERE b2.brand COLLATE utf8mb4_unicode_ci LIKE CONCAT('%', br.name, '%') COLLATE utf8mb4_unicode_ci)
+            END) AS total_bikes
             FROM brands br
-            ORDER BY br.name ASC";
+            ORDER BY br.id ASC";
     $stmt = $conn->prepare($sql);
     $stmt->execute();
     $brands = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -119,7 +130,8 @@ try {
                                                     style="width: 50px; height: 50px;">
                                                     <img src="public/assets/images/brands/<?= htmlspecialchars((string) $brand['image_url'], ENT_QUOTES, 'UTF-8') ?>"
                                                         alt="<?= htmlspecialchars($brand['name'], ENT_QUOTES, 'UTF-8') ?>"
-                                                        style="width: 50px; height: 50px; object-fit: contain;">
+                                                        style="width: 50px; height: 50px; object-fit: contain;"
+                                                        onerror="this.onerror=null; this.outerHTML='<i class=\'fa-solid fa-bicycle\' style=\'color: #FF5722; font-size: 1.25rem;\'></i>';">
                                                 </div>
                                             <?php else: ?>
                                                 <div class="bg-light border rounded d-flex align-items-center justify-content-center"
@@ -147,7 +159,7 @@ try {
                                         <!-- Badge Cam nổi bật số lượng -->
                                         <span class="badge rounded-pill text-white shadow-sm"
                                             style="background-color: #FF5722; font-size: 0.85rem; padding: 0.4em 0.9em;">
-                                            <i class="fa-solid fa-box me-1"></i> <?= $brand['bike_count'] ?>
+                                            <i class="fa-solid fa-box me-1"></i> <?= $brand['total_bikes'] ?>
                                         </span>
                                     </td>
                                     <td class="text-end">
@@ -158,7 +170,7 @@ try {
                                                 style="width: 34px; height: 34px;" title="Sửa tên">
                                                 <i class="fa-solid fa-pen"></i>
                                             </button>
-                                            <button onclick="deleteBrand(<?= $brand['id'] ?>, <?= $brand['bike_count'] ?>)"
+                                            <button onclick="deleteBrand(<?= $brand['id'] ?>, <?= $brand['total_bikes'] ?>)"
                                                 class="btn btn-sm btn-outline-danger rounded-3 text-danger d-flex align-items-center justify-content-center border-danger"
                                                 style="width: 34px; height: 34px;" title="Xóa">
                                                 <i class="fa-solid fa-trash-can"></i>

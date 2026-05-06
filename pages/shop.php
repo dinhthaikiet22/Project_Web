@@ -26,7 +26,7 @@ $brands = [];
 try {
     $s = $conn->query(
         "SELECT DISTINCT brand FROM bikes
-         WHERE brand IS NOT NULL AND brand != '' AND status = 'available'
+         WHERE brand IS NOT NULL AND brand != '' AND status = 'active'
          ORDER BY brand ASC"
     );
     $brands = $s ? array_column($s->fetchAll(PDO::FETCH_ASSOC), 'brand') : [];
@@ -36,7 +36,7 @@ try {
 
 // ── 3. Xây dựng Dynamic SQL (WHERE 1=1 pattern) ──────────────────────────────
 //
-// Base query: JOIN categories lấy cat_name, chỉ xe available có ảnh.
+// Base query: JOIN categories lấy cat_name, chỉ xe active có ảnh.
 // $filterSql: chuỗi AND clauses ghép thêm tùy filter người dùng chọn.
 // $bindMap:   map placeholder => [value, PDO type] — bindValue từng cái riêng.
 //
@@ -48,7 +48,7 @@ $baseSql = "SELECT b.*, c.name AS cat_name
             INNER JOIN (
                 SELECT title, MAX(id) AS max_id
                 FROM bikes
-                WHERE status = 'available'
+                WHERE status = 'active'
                   AND image_url IS NOT NULL
                   AND image_url != ''
                 GROUP BY title
@@ -113,7 +113,7 @@ try {
                  INNER JOIN (
                      SELECT title, MAX(id) AS max_id
                      FROM bikes
-                     WHERE status = 'available'
+                     WHERE status = 'active'
                        AND image_url IS NOT NULL
                        AND image_url != ''
                      GROUP BY title

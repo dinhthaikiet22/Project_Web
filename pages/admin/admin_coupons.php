@@ -1,8 +1,6 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/../../includes/admin/admin_header.php';
-
 /** @var PDO $conn */
 $conn = require_once __DIR__ . '/../../config/db.php';
 
@@ -24,7 +22,7 @@ try {
 $msg = $_GET['msg'] ?? '';
 $error = '';
 
-// 2. XỬ LÝ POST ACTION (Thêm / Xóa / Kích hoạt)
+// 2. XỬ LÝ POST ACTION (Thêm / Xóa / Kích hoạt) - Phải gọi TRƯỚC KHI require_once admin_header.php
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     $action = $_POST['action'];
 
@@ -66,6 +64,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
          } catch(PDOException $e) { $error = "Lỗi xóa dữ liệu: " . $e->getMessage(); }
     }
 }
+
+// Tải header sau khi xử lý các request POST thành công để tránh lỗi header
+require_once __DIR__ . '/../../includes/admin/admin_header.php';
 
 // 3. FETCH COUPONS
 $coupons = [];
